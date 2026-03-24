@@ -1,0 +1,42 @@
+@import 'tailwindcss';
+
+:root {
+  /* Colors */
+  --accent-pink: #f472b6;
+  --accent-purple: #8b5cf6;
+  --accent-purple-soft: #8b5cf620;
+  --accent-teal: #14b8a6;
+  --bg-card: #f4f4f5;
+  --bg-elevated: #e4e4e7;
+  --bg-page: #ffffff;
+  --bg-sidebar: #18181b;
+  --border-standard: #e4e4e7;
+  --status-active: #22c55e;
+  --status-expired: #ef4444;
+  --status-pending: #f59e0b;
+  --text-muted: #d4d4d8;
+  --text-on-dark: #ffffff;
+  --text-on-dark-muted: #ffffffb3;
+  --text-primary: #18181b;
+  --text-secondary: #71717a;
+  --text-tertiary: #a1a1aa;
+}
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
+
+  #root {
+    height: 100%;
+  }
+
+  .font-body {
+    font-family: 'Inter', sans-serif;
+  }
+
+  .font-display {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+}
