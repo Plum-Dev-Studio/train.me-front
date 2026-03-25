@@ -6,7 +6,10 @@ import { PasswordInput } from './PasswordInput'
 describe('PasswordInput', () => {
   it('renders as password type by default', () => {
     render(<PasswordInput label="Contraseña" id="pass" />)
-    expect(screen.getByLabelText('Contraseña')).toHaveAttribute('type', 'password')
+    expect(screen.getByLabelText('Contraseña')).toHaveAttribute(
+      'type',
+      'password',
+    )
   })
 
   it('toggles visibility when eye icon is clicked', async () => {
