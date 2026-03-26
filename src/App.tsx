@@ -5,6 +5,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { PublicOnlyRoute } from '@/components/auth/PublicOnlyRoute'
 
 const AuthCallbackPage = lazy(() => import('@/pages/AuthCallbackPage'))
+const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
 const LoginPage = lazy(() => import('@/pages/LoginPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 
@@ -22,7 +23,7 @@ function App() {
         {/* Protected: redirect to login if not authenticated */}
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
-            <Route index element={<div />} />
+            <Route index element={<DashboardPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Route>
