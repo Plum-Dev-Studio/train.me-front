@@ -1,29 +1,30 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   /* Colors */
-  --accent-pink: #F472B6;
-  --accent-purple: #8B5CF6;
-  --accent-purple-soft: #8B5CF620;
-  --accent-teal: #14B8A6;
-  --bg-card: #F4F4F5;
-  --bg-elevated: #E4E4E7;
-  --bg-page: #FFFFFF;
-  --bg-sidebar: #18181B;
-  --border-standard: #E4E4E7;
-  --status-active: #22C55E;
-  --status-expired: #EF4444;
-  --status-pending: #F59E0B;
-  --text-muted: #D4D4D8;
-  --text-on-dark: #FFFFFF;
-  --text-on-dark-muted: #FFFFFFB3;
-  --text-primary: #18181B;
-  --text-secondary: #71717A;
-  --text-tertiary: #A1A1AA;
+  --accent-pink: #f472b6;
+  --accent-purple: #8b5cf6;
+  --accent-purple-soft: #8b5cf620;
+  --accent-teal: #14b8a6;
+  --bg-card: #f4f4f5;
+  --bg-elevated: #e4e4e7;
+  --bg-page: #ffffff;
+  --bg-sidebar: #18181b;
+  --border-standard: #e4e4e7;
+  --status-active: #22c55e;
+  --status-expired: #ef4444;
+  --status-pending: #f59e0b;
+  --text-muted: #d4d4d8;
+  --text-on-dark: #ffffff;
+  --text-on-dark-muted: #ffffffb3;
+  --text-primary: #18181b;
+  --text-secondary: #71717a;
+  --text-tertiary: #a1a1aa;
 }
 
 @layer base {
-  html, body {
+  html,
+  body {
     height: 100%;
   }
 
@@ -32,10 +33,10 @@
   }
 
   .font-body {
-    font-family: "Inter", sans-serif;
+    font-family: 'Inter', sans-serif;
   }
 
   .font-display {
-    font-family: "Plus Jakarta Sans", sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
   }
 }

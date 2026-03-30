@@ -41,7 +41,10 @@ export default function LoginPage() {
 
       {/* Form Panel */}
       <div className="flex flex-1 items-center justify-center px-6 py-12 sm:px-20">
-        <form onSubmit={handleSubmit} className="flex w-full max-w-[400px] flex-col gap-8">
+        <form
+          onSubmit={handleSubmit}
+          className="flex w-full max-w-[400px] flex-col gap-8"
+        >
           {/* Header */}
           <div className="flex flex-col gap-2">
             <h2 className="font-display text-[28px] font-bold text-[var(--text-primary)]">
@@ -59,7 +62,9 @@ export default function LoginPage() {
               alt="Google"
               className="h-5 w-5"
             />
-            <span className="text-[14px] font-medium">Continuar con Google</span>
+            <span className="text-[14px] font-medium">
+              Continuar con Google
+            </span>
           </Button>
 
           {/* Divider */}
