@@ -1,10 +1,4 @@
-import {
-  Search,
-  Bell,
-  UserPlus,
-  Pencil,
-  Ellipsis,
-} from 'lucide-react'
+import { Search, Bell, UserPlus, Pencil, Ellipsis } from 'lucide-react'
 
 interface StatCardProps {
   label: string
@@ -13,7 +7,12 @@ interface StatCardProps {
   variant?: 'default' | 'accent'
 }
 
-function StatCard({ label, value, change, variant = 'default' }: StatCardProps) {
+function StatCard({
+  label,
+  value,
+  change,
+  variant = 'default',
+}: StatCardProps) {
   const isAccent = variant === 'accent'
   return (
     <div
@@ -53,23 +52,24 @@ interface Client {
   color: string
 }
 
-const statusStyles: Record<Status, { bg: string; text: string; dot: string }> = {
-  active: {
-    bg: 'bg-[#22C55E20]',
-    text: 'text-[#22C55E]',
-    dot: 'bg-[var(--status-active)]',
-  },
-  pending: {
-    bg: 'bg-[#F59E0B20]',
-    text: 'text-[#F59E0B]',
-    dot: 'bg-[var(--status-pending)]',
-  },
-  expired: {
-    bg: 'bg-[#EF444420]',
-    text: 'text-[#EF4444]',
-    dot: 'bg-[var(--status-expired)]',
-  },
-}
+const statusStyles: Record<Status, { bg: string; text: string; dot: string }> =
+  {
+    active: {
+      bg: 'bg-[#22C55E20]',
+      text: 'text-[#22C55E]',
+      dot: 'bg-[var(--status-active)]',
+    },
+    pending: {
+      bg: 'bg-[#F59E0B20]',
+      text: 'text-[#F59E0B]',
+      dot: 'bg-[var(--status-pending)]',
+    },
+    expired: {
+      bg: 'bg-[#EF444420]',
+      text: 'text-[#EF4444]',
+      dot: 'bg-[var(--status-expired)]',
+    },
+  }
 
 const clients: Client[] = [
   {
@@ -157,7 +157,11 @@ export default function DashboardPage() {
       <div className="flex flex-1 flex-col gap-7 overflow-auto p-8">
         {/* Stats Row */}
         <div className="flex gap-4">
-          <StatCard label="Clientes Activos" value="24" change="+3 esta semana" />
+          <StatCard
+            label="Clientes Activos"
+            value="24"
+            change="+3 esta semana"
+          />
           <StatCard label="Planes Activos" value="18" change="+5 este mes" />
           <StatCard label="Suscripciones" value="31" change="+12% ingresos" />
           <StatCard
@@ -208,9 +212,7 @@ export default function DashboardPage() {
                 <div
                   key={client.email}
                   className={`flex items-center px-6 py-3.5 ${
-                    i < clients.length - 1
-                      ? 'border-b border-[#E4E4E720]'
-                      : ''
+                    i < clients.length - 1 ? 'border-b border-[#E4E4E720]' : ''
                   }`}
                 >
                   {/* Client */}
