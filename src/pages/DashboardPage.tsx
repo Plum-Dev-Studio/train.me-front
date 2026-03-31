@@ -144,7 +144,10 @@ export default function DashboardPage() {
               Buscar...
             </span>
           </div>
-          <button className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--bg-card)]">
+          <button
+            aria-label="Notificaciones"
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--bg-card)]"
+          >
             <Bell className="h-[18px] w-[18px] text-[var(--text-primary)]" />
           </button>
         </div>
@@ -253,10 +256,16 @@ export default function DashboardPage() {
 
                   {/* Actions */}
                   <div className="flex w-[80px] gap-2">
-                    <button className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
+                    <button
+                      aria-label={`Editar ${client.name}`}
+                      className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                    >
                       <Pencil className="h-4 w-4" />
                     </button>
-                    <button className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
+                    <button
+                      aria-label={`Más opciones para ${client.name}`}
+                      className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                    >
                       <Ellipsis className="h-4 w-4" />
                     </button>
                   </div>
