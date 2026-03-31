@@ -5,8 +5,10 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { PublicOnlyRoute } from '@/components/auth/PublicOnlyRoute'
 
 const AuthCallbackPage = lazy(() => import('@/pages/AuthCallbackPage'))
+const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
 const LoginPage = lazy(() => import('@/pages/LoginPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
+const PlaceholderPage = lazy(() => import('@/pages/PlaceholderPage'))
 
 function App() {
   return (
@@ -22,7 +24,13 @@ function App() {
         {/* Protected: redirect to login if not authenticated */}
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
-            <Route index element={<div />} />
+            <Route index element={<DashboardPage />} />
+            <Route path="clientes" element={<PlaceholderPage />} />
+            <Route path="planes" element={<PlaceholderPage />} />
+            <Route path="ejercicios" element={<PlaceholderPage />} />
+            <Route path="agenda" element={<PlaceholderPage />} />
+            <Route path="suscripciones" element={<PlaceholderPage />} />
+            <Route path="configuracion" element={<PlaceholderPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Route>
