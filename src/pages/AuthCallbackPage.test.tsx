@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router'
 import AuthCallbackPage from './AuthCallbackPage'
@@ -32,6 +32,18 @@ describe('AuthCallbackPage', () => {
 
     expect(localStorage.getItem('auth_token')).toBe('my-jwt-token')
     expect(screen.getByText('Home')).toBeInTheDocument()
+  })
+
+  it('clears URL hash after successful token parse', () => {
+    const replaceStateSpy = vi.spyOn(window.history, 'replaceState')
+
+    renderWithRouter({
+      pathname: '/auth/callback',
+      hash: '#token=my-jwt-token',
+    })
+
+    expect(replaceStateSpy).toHaveBeenCalledWith(null, '', '/auth/callback')
+    replaceStateSpy.mockRestore()
   })
 
   it('navigates to /login on account_deactivated error', () => {
