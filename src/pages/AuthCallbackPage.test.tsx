@@ -7,7 +7,11 @@ beforeEach(() => {
   localStorage.clear()
 })
 
-function renderWithRouter(initialEntry: { pathname: string; hash?: string; search?: string }) {
+function renderWithRouter(initialEntry: {
+  pathname: string
+  hash?: string
+  search?: string
+}) {
   return render(
     <MemoryRouter initialEntries={[initialEntry]}>
       <Routes>
