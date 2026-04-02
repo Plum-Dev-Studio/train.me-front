@@ -4,7 +4,13 @@ import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { PasswordInput } from '@/components/ui/PasswordInput'
 
+const API_BASE = import.meta.env.VITE_API_BASE ?? '/api'
+
 export default function LoginPage() {
+  function handleGoogleLogin() {
+    window.location.href = `${API_BASE}/auth/google`
+  }
+
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     // TODO: call login mutation with FormData from e.currentTarget
@@ -56,7 +62,7 @@ export default function LoginPage() {
           </div>
 
           {/* Google Button */}
-          <Button type="button" variant="outline">
+          <Button type="button" variant="outline" onClick={handleGoogleLogin}>
             <img
               src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
               alt="Google"
