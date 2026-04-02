@@ -5,10 +5,13 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { PublicOnlyRoute } from '@/components/auth/PublicOnlyRoute'
 
 const AuthCallbackPage = lazy(() => import('@/pages/AuthCallbackPage'))
+const ClientsPage = lazy(() => import('@/pages/ClientsPage'))
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
+const ExercisesPage = lazy(() => import('@/pages/ExercisesPage'))
 const LoginPage = lazy(() => import('@/pages/LoginPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 const PlaceholderPage = lazy(() => import('@/pages/PlaceholderPage'))
+const PlansPage = lazy(() => import('@/pages/PlansPage'))
 
 function App() {
   return (
@@ -25,9 +28,9 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
             <Route index element={<DashboardPage />} />
-            <Route path="clientes" element={<PlaceholderPage />} />
-            <Route path="planes" element={<PlaceholderPage />} />
-            <Route path="ejercicios" element={<PlaceholderPage />} />
+            <Route path="clientes" element={<ClientsPage />} />
+            <Route path="planes" element={<PlansPage />} />
+            <Route path="ejercicios" element={<ExercisesPage />} />
             <Route path="agenda" element={<PlaceholderPage />} />
             <Route path="suscripciones" element={<PlaceholderPage />} />
             <Route path="configuracion" element={<PlaceholderPage />} />
