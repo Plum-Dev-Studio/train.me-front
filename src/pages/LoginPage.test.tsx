@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
@@ -11,6 +11,10 @@ function renderLoginPage() {
     </MemoryRouter>,
   )
 }
+
+beforeEach(() => {
+  vi.restoreAllMocks()
+})
 
 describe('LoginPage', () => {
   it('renders the brand tagline', () => {
@@ -58,5 +62,31 @@ describe('LoginPage', () => {
     renderLoginPage()
     const submitBtn = screen.getByRole('button', { name: 'Iniciar sesión' })
     expect(submitBtn).toHaveAttribute('type', 'submit')
+  })
+
+  it('redirects to Google OAuth on Google button click', async () => {
+    const user = userEvent.setup()
+    const locationSpy = vi.spyOn(window, 'location', 'get').mockReturnValue({
+      ...window.location,
+      set href(_url: string) {},
+    } as Location)
+
+    const hrefSetter = vi.fn()
+    Object.defineProperty(window.location, 'href', {
+      set: hrefSetter,
+      configurable: true,
+    })
+
+    renderLoginPage()
+    await user.click(screen.getByText('Continuar con Google'))
+
+    expect(hrefSetter).toHaveBeenCalledWith('/api/auth/google')
+    locationSpy.mockRestore()
+  })
+
+  it('sign up link does not trigger navigation', () => {
+    renderLoginPage()
+    const link = screen.getByText('Registrate')
+    expect(link).toHaveAttribute('href', '#')
   })
 })
