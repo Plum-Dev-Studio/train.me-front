@@ -16,6 +16,9 @@ dist-ssr
 .env
 .env.local
 
+# Local planner / scratch context (not for repo)
+.ctx/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
