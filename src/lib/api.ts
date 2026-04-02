@@ -42,3 +42,38 @@ export async function apiFetch<T>(
 
   return response.json()
 }
+
+export interface ApiFetchBlobResult {
+  blob: Blob
+  contentDisposition: string | null
+}
+
+/** Authenticated request expecting a binary body — does not parse JSON on success. */
+export async function apiFetchBlob(
+  endpoint: string,
+  options?: RequestInit,
+): Promise<ApiFetchBlobResult> {
+  const headers: Record<string, string> = {}
+
+  const token = localStorage.getItem('auth_token')
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+
+  const response = await fetch(`${API_BASE}${endpoint}`, {
+    ...options,
+    headers: {
+      ...headers,
+      ...(options?.headers as Record<string, string>),
+    },
+  })
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => null)
+    throw new ApiError(response.status, body)
+  }
+
+  const contentDisposition = response.headers.get('content-disposition')
+  const blob = await response.blob()
+  return { blob, contentDisposition }
+}

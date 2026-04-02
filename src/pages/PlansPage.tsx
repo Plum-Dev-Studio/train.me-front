@@ -1,7 +1,14 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { FileDown } from 'lucide-react'
 import { PageHeader } from '@/components/PageHeader'
 import { useTrainerDashboard } from '@/contexts/useTrainerDashboard'
-import { fetchPlansWithUserEmails, planStatusLabel } from '@/lib/plans'
+import { ApiError } from '@/lib/api'
+import {
+  downloadPlanPdf,
+  fetchPlansWithUserEmails,
+  planStatusLabel,
+} from '@/lib/plans'
 
 function formatShortDate(iso: string | null): string {
   if (!iso) return '—'
@@ -25,6 +32,29 @@ export default function PlansPage() {
     queryFn: () => fetchPlansWithUserEmails(trainerProfileId!),
     enabled: Boolean(trainerProfileId) && dashboard.isSuccess,
   })
+
+  const [downloadingPlanId, setDownloadingPlanId] = useState<string | null>(
+    null,
+  )
+  const [pdfError, setPdfError] = useState<string | null>(null)
+
+  async function handleDownloadPdf(planId: string) {
+    setPdfError(null)
+    setDownloadingPlanId(planId)
+    try {
+      await downloadPlanPdf(planId)
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setPdfError(
+          `No se pudo descargar el PDF (${err.status}). ${err.status === 403 ? 'Sin permiso.' : err.status === 404 ? 'Plan no encontrado.' : ''}`.trim(),
+        )
+      } else {
+        setPdfError('No se pudo descargar el PDF. Intentá de nuevo.')
+      }
+    } finally {
+      setDownloadingPlanId(null)
+    }
+  }
 
   if (dashboard.isPending) {
     return (
@@ -66,6 +96,12 @@ export default function PlansPage() {
       />
 
       <div className="flex flex-1 flex-col gap-4 overflow-auto p-8">
+        {pdfError ? (
+          <p role="alert" className="text-[14px] text-[var(--status-expired)]">
+            {pdfError}
+          </p>
+        ) : null}
+
         {query.isPending ? (
           <p className="text-[14px] text-[var(--text-secondary)]">
             Cargando planes…
@@ -92,24 +128,27 @@ export default function PlansPage() {
             </p>
           ) : (
             <div className="overflow-hidden rounded-2xl border border-[var(--border-standard)] bg-[var(--bg-card)]">
-              <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_100px_100px_100px_100px] gap-2 border-b border-[var(--border-standard)] px-4 py-3 text-[12px] font-semibold text-[var(--text-secondary)]">
+              <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_100px_100px_100px_100px_52px] gap-2 border-b border-[var(--border-standard)] px-4 py-3 text-[12px] font-semibold text-[var(--text-secondary)]">
                 <span>Cliente</span>
                 <span>Notas</span>
                 <span>Estado</span>
                 <span>Inicio</span>
                 <span>Fin</span>
                 <span>Actualizado</span>
+                <span className="text-center">PDF</span>
               </div>
               <ul className="divide-y divide-[#E4E4E720]">
                 {query.data.plans.map((plan) => {
                   const user = query.data!.usersById[plan.userId]
+                  const clientLabel = user?.email ?? plan.userId
+                  const busy = downloadingPlanId === plan.id
                   return (
                     <li
                       key={plan.id}
-                      className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_100px_100px_100px_100px] gap-2 px-4 py-3 text-[13px] text-[var(--text-primary)]"
+                      className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_100px_100px_100px_100px_52px] gap-2 px-4 py-3 text-[13px] text-[var(--text-primary)]"
                     >
                       <span className="truncate font-medium">
-                        {user?.email ?? plan.userId}
+                        {clientLabel}
                       </span>
                       <span className="line-clamp-2 text-[var(--text-secondary)]">
                         {plan.notes ?? '—'}
@@ -126,6 +165,17 @@ export default function PlansPage() {
                       <span className="text-[var(--text-secondary)]">
                         {formatShortDate(plan.updatedAt)}
                       </span>
+                      <div className="flex justify-center">
+                        <button
+                          type="button"
+                          disabled={busy}
+                          aria-label={`Descargar PDF del plan para ${clientLabel}`}
+                          onClick={() => void handleDownloadPdf(plan.id)}
+                          className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--text-secondary)] hover:bg-[#E4E4E720] hover:text-[var(--text-primary)] disabled:opacity-40"
+                        >
+                          <FileDown className="h-4 w-4 shrink-0" aria-hidden />
+                        </button>
+                      </div>
                     </li>
                   )
                 })}
