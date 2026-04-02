@@ -8,6 +8,8 @@ import {
   CreditCard,
   Settings,
 } from 'lucide-react'
+import { useTrainerDashboard } from '@/contexts/useTrainerDashboard'
+import { initialsFromFullName } from '@/lib/trainerDashboard'
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Panel' },
@@ -19,6 +21,10 @@ const navItems = [
 ]
 
 export function Sidebar() {
+  const dashboard = useTrainerDashboard()
+  const displayName = dashboard.data?.trainer.displayName
+  const initials = displayName ? initialsFromFullName(displayName) : '…'
+
   return (
     <aside className="flex h-full w-[260px] shrink-0 flex-col bg-[var(--bg-sidebar)] px-5 py-6">
       {/* Logo */}
@@ -83,11 +89,15 @@ export function Sidebar() {
       {/* Profile */}
       <div className="mt-3 flex items-center gap-3 px-1 py-3">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--accent-purple)]">
-          <span className="text-[13px] font-bold text-white">JG</span>
+          <span className="text-[13px] font-bold text-white">{initials}</span>
         </div>
-        <div className="flex flex-col gap-0.5">
-          <span className="text-[14px] font-semibold text-white">
-            Juan García
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <span className="truncate text-[14px] font-semibold text-white">
+            {dashboard.isPending
+              ? 'Cargando…'
+              : dashboard.isError
+                ? 'Entrenador'
+                : (displayName ?? 'Entrenador')}
           </span>
           <span className="text-[12px] text-[#FFFFFFB3]">
             Entrenador Personal
