@@ -66,14 +66,16 @@ describe('LoginPage', () => {
 
   it('redirects to Google OAuth on Google button click', async () => {
     const user = userEvent.setup()
-    const locationSpy = vi.spyOn(window, 'location', 'get').mockReturnValue({
-      ...window.location,
-      set href(_url: string) {},
-    } as Location)
-
     const hrefSetter = vi.fn()
+
+    Object.defineProperty(window, 'location', {
+      value: { ...window.location, href: '' },
+      writable: true,
+      configurable: true,
+    })
     Object.defineProperty(window.location, 'href', {
       set: hrefSetter,
+      get: () => '',
       configurable: true,
     })
 
@@ -81,7 +83,6 @@ describe('LoginPage', () => {
     await user.click(screen.getByText('Continuar con Google'))
 
     expect(hrefSetter).toHaveBeenCalledWith('/api/auth/google')
-    locationSpy.mockRestore()
   })
 
   it('sign up link does not trigger navigation', () => {
