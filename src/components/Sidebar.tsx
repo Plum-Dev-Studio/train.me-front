@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router'
+import { NavLink, useNavigate } from 'react-router'
 import {
   Dumbbell,
   LayoutDashboard,
@@ -7,6 +7,7 @@ import {
   Calendar,
   CreditCard,
   Settings,
+  LogOut,
 } from 'lucide-react'
 
 const navItems = [
@@ -19,6 +20,13 @@ const navItems = [
 ]
 
 export function Sidebar() {
+  const navigate = useNavigate()
+
+  function handleLogout() {
+    localStorage.removeItem('auth_token')
+    navigate('/login', { replace: true })
+  }
+
   return (
     <aside className="flex h-full w-[260px] shrink-0 flex-col bg-[var(--bg-sidebar)] px-5 py-6">
       {/* Logo */}
@@ -81,18 +89,26 @@ export function Sidebar() {
       </div>
 
       {/* Profile */}
-      <div className="mt-3 flex items-center gap-3 px-1 py-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--accent-purple)]">
-          <span className="text-[13px] font-bold text-white">JG</span>
+      <div className="mt-3 flex items-center justify-between px-1 py-3">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--accent-purple)]">
+            <span className="text-[13px] font-bold text-white">JG</span>
+          </div>
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[14px] font-semibold text-white">
+              Juan García
+            </span>
+            <span className="text-[12px] text-[#FFFFFFB3]">
+              Entrenador Personal
+            </span>
+          </div>
         </div>
-        <div className="flex flex-col gap-0.5">
-          <span className="text-[14px] font-semibold text-white">
-            Juan García
-          </span>
-          <span className="text-[12px] text-[#FFFFFFB3]">
-            Entrenador Personal
-          </span>
-        </div>
+        <button
+          onClick={handleLogout}
+          className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[#FFFFFF10] text-[#FFFFFFB3] hover:bg-[#FFFFFF20] hover:text-white"
+        >
+          <LogOut className="h-[18px] w-[18px]" />
+        </button>
       </div>
     </aside>
   )
