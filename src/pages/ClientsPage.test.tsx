@@ -9,6 +9,15 @@ vi.mock('@/lib/trainerClients', () => ({
   fetchTrainerClientsWithUsers: vi.fn(),
 }))
 
+vi.mock('@/contexts/useTrainerDashboard', () => ({
+  useTrainerDashboard: vi.fn(() => ({
+    data: { trainer: { profileId: 'tr-1' } },
+    isSuccess: true,
+    isPending: false,
+    isError: false,
+  })),
+}))
+
 function renderWithQuery(ui: ReactElement) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },

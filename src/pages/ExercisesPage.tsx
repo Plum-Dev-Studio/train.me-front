@@ -1,18 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 import { PageHeader } from '@/components/PageHeader'
 import { fetchExercises } from '@/lib/exercisesApi'
+import { formatShortDate } from '@/lib/format'
 
-function formatShortDate(iso: string): string {
-  try {
-    return new Date(iso).toLocaleDateString('es-AR', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    })
-  } catch {
-    return iso
-  }
-}
+const GRID_COLS = 'grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_120px_100px_100px]'
 
 export default function ExercisesPage() {
   const query = useQuery({
@@ -54,7 +45,9 @@ export default function ExercisesPage() {
             </p>
           ) : (
             <div className="overflow-hidden rounded-2xl border border-[var(--border-standard)] bg-[var(--bg-card)]">
-              <div className="grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_120px_100px_100px] gap-2 border-b border-[var(--border-standard)] px-4 py-3 text-[12px] font-semibold text-[var(--text-secondary)]">
+              <div
+                className={`grid ${GRID_COLS} gap-2 border-b border-[var(--border-standard)] px-4 py-3 text-[12px] font-semibold text-[var(--text-secondary)]`}
+              >
                 <span>Nombre</span>
                 <span>Descripción</span>
                 <span>Grupo</span>
@@ -65,7 +58,7 @@ export default function ExercisesPage() {
                 {query.data.map((ex) => (
                   <li
                     key={ex.id}
-                    className="grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_120px_100px_100px] gap-2 px-4 py-3 text-[13px] text-[var(--text-primary)]"
+                    className={`grid ${GRID_COLS} gap-2 px-4 py-3 text-[13px] text-[var(--text-primary)]`}
                   >
                     <span className="font-semibold">{ex.name}</span>
                     <span className="line-clamp-2 text-[var(--text-secondary)]">

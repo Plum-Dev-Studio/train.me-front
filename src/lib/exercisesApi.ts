@@ -15,9 +15,8 @@ export async function fetchExercises(
   trainerId?: string,
 ): Promise<ExerciseDto[]> {
   const q = trainerId?.trim()
-  const path =
-    q !== undefined && q.length > 0
-      ? `/exercises?trainerId=${encodeURIComponent(q)}`
-      : '/exercises'
+  const path = q
+    ? `/exercises?trainerId=${encodeURIComponent(q)}`
+    : '/exercises'
   return apiFetch<ExerciseDto[]>(path)
 }

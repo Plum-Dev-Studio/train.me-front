@@ -1,33 +1,28 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { PageHeader } from '@/components/PageHeader'
+import { useTrainerDashboard } from '@/contexts/useTrainerDashboard'
+import { formatShortDate } from '@/lib/format'
 import { fetchTrainerClientsWithUsers } from '@/lib/trainerClients'
 import { mapTrainerClientStatus } from '@/lib/trainerDashboard'
-
-function formatShortDate(iso: string): string {
-  try {
-    return new Date(iso).toLocaleDateString('es-AR', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    })
-  } catch {
-    return iso
-  }
-}
 
 function shortId(id: string | null): string {
   if (!id) return '—'
   return id.length > 10 ? `${id.slice(0, 8)}…` : id
 }
 
+const GRID_COLS = 'grid-cols-[minmax(0,1.4fr)_100px_120px_140px_100px]'
+
 export default function ClientsPage() {
+  const dashboard = useTrainerDashboard()
+  const trainerProfileId = dashboard.data?.trainer.profileId
   const [page, setPage] = useState(1)
   const limit = 20
 
   const query = useQuery({
-    queryKey: ['trainerClients', page, limit],
+    queryKey: ['trainerClients', trainerProfileId, page, limit],
     queryFn: () => fetchTrainerClientsWithUsers(page, limit),
+    enabled: Boolean(trainerProfileId) && dashboard.isSuccess,
   })
 
   const totalPages = query.data
@@ -95,7 +90,9 @@ export default function ClientsPage() {
               </p>
             ) : (
               <div className="overflow-hidden rounded-2xl border border-[var(--border-standard)] bg-[var(--bg-card)]">
-                <div className="grid grid-cols-[minmax(0,1.4fr)_100px_120px_140px_100px] gap-2 border-b border-[var(--border-standard)] px-4 py-3 text-[12px] font-semibold text-[var(--text-secondary)]">
+                <div
+                  className={`grid ${GRID_COLS} gap-2 border-b border-[var(--border-standard)] px-4 py-3 text-[12px] font-semibold text-[var(--text-secondary)]`}
+                >
                   <span>Email</span>
                   <span>Estado</span>
                   <span>Suscripción</span>
@@ -111,7 +108,7 @@ export default function ClientsPage() {
                     return (
                       <li
                         key={row.id}
-                        className="grid grid-cols-[minmax(0,1.4fr)_100px_120px_140px_100px] gap-2 px-4 py-3 text-[13px] text-[var(--text-primary)]"
+                        className={`grid ${GRID_COLS} gap-2 px-4 py-3 text-[13px] text-[var(--text-primary)]`}
                       >
                         <span className="truncate font-medium">
                           {user?.email ?? row.userId}

@@ -12,19 +12,23 @@ export class ApiError extends Error {
   }
 }
 
+function buildAuthHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {}
+  const token = localStorage.getItem('auth_token')
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+  return headers
+}
+
 export async function apiFetch<T>(
   endpoint: string,
   options?: RequestInit,
 ): Promise<T> {
-  const headers: Record<string, string> = {}
+  const headers = buildAuthHeaders()
 
   if (!(options?.body instanceof FormData)) {
     headers['Content-Type'] = 'application/json'
-  }
-
-  const token = localStorage.getItem('auth_token')
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
   }
 
   const response = await fetch(`${API_BASE}${endpoint}`, {
@@ -53,12 +57,7 @@ export async function apiFetchBlob(
   endpoint: string,
   options?: RequestInit,
 ): Promise<ApiFetchBlobResult> {
-  const headers: Record<string, string> = {}
-
-  const token = localStorage.getItem('auth_token')
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
-  }
+  const headers = buildAuthHeaders()
 
   const response = await fetch(`${API_BASE}${endpoint}`, {
     ...options,

@@ -91,13 +91,10 @@ export async function downloadPlanPdf(planId: string): Promise<void> {
   const filename = fromHeader ?? `plan-${planId}.pdf`
 
   const url = URL.createObjectURL(blob)
-  try {
-    const a = document.createElement('a')
-    a.href = url
-    a.download = filename
-    a.rel = 'noopener'
-    a.click()
-  } finally {
-    URL.revokeObjectURL(url)
-  }
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.rel = 'noopener'
+  a.click()
+  setTimeout(() => URL.revokeObjectURL(url), 60_000)
 }

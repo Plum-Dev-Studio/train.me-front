@@ -4,24 +4,15 @@ import { FileDown } from 'lucide-react'
 import { PageHeader } from '@/components/PageHeader'
 import { useTrainerDashboard } from '@/contexts/useTrainerDashboard'
 import { ApiError } from '@/lib/api'
+import { formatShortDate } from '@/lib/format'
 import {
   downloadPlanPdf,
   fetchPlansWithUserEmails,
   planStatusLabel,
 } from '@/lib/plans'
 
-function formatShortDate(iso: string | null): string {
-  if (!iso) return '—'
-  try {
-    return new Date(iso).toLocaleDateString('es-AR', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    })
-  } catch {
-    return iso
-  }
-}
+const GRID_COLS =
+  'grid-cols-[minmax(0,1fr)_minmax(0,1fr)_100px_100px_100px_100px_52px]'
 
 export default function PlansPage() {
   const dashboard = useTrainerDashboard()
@@ -36,20 +27,29 @@ export default function PlansPage() {
   const [downloadingPlanId, setDownloadingPlanId] = useState<string | null>(
     null,
   )
-  const [pdfError, setPdfError] = useState<string | null>(null)
+  const [pdfErrors, setPdfErrors] = useState<Record<string, string>>({})
 
   async function handleDownloadPdf(planId: string) {
-    setPdfError(null)
+    setPdfErrors((prev) => {
+      const next = { ...prev }
+      delete next[planId]
+      return next
+    })
     setDownloadingPlanId(planId)
     try {
       await downloadPlanPdf(planId)
     } catch (err) {
       if (err instanceof ApiError) {
-        setPdfError(
-          `No se pudo descargar el PDF (${err.status}). ${err.status === 403 ? 'Sin permiso.' : err.status === 404 ? 'Plan no encontrado.' : ''}`.trim(),
-        )
+        setPdfErrors((prev) => ({
+          ...prev,
+          [planId]:
+            `No se pudo descargar el PDF (${err.status}). ${err.status === 403 ? 'Sin permiso.' : err.status === 404 ? 'Plan no encontrado.' : ''}`.trim(),
+        }))
       } else {
-        setPdfError('No se pudo descargar el PDF. Intentá de nuevo.')
+        setPdfErrors((prev) => ({
+          ...prev,
+          [planId]: 'No se pudo descargar el PDF. Intentá de nuevo.',
+        }))
       }
     } finally {
       setDownloadingPlanId(null)
@@ -96,12 +96,6 @@ export default function PlansPage() {
       />
 
       <div className="flex flex-1 flex-col gap-4 overflow-auto p-8">
-        {pdfError ? (
-          <p role="alert" className="text-[14px] text-[var(--status-expired)]">
-            {pdfError}
-          </p>
-        ) : null}
-
         {query.isPending ? (
           <p className="text-[14px] text-[var(--text-secondary)]">
             Cargando planes…
@@ -128,7 +122,9 @@ export default function PlansPage() {
             </p>
           ) : (
             <div className="overflow-hidden rounded-2xl border border-[var(--border-standard)] bg-[var(--bg-card)]">
-              <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_100px_100px_100px_100px_52px] gap-2 border-b border-[var(--border-standard)] px-4 py-3 text-[12px] font-semibold text-[var(--text-secondary)]">
+              <div
+                className={`grid ${GRID_COLS} gap-2 border-b border-[var(--border-standard)] px-4 py-3 text-[12px] font-semibold text-[var(--text-secondary)]`}
+              >
                 <span>Cliente</span>
                 <span>Notas</span>
                 <span>Estado</span>
@@ -145,7 +141,7 @@ export default function PlansPage() {
                   return (
                     <li
                       key={plan.id}
-                      className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_100px_100px_100px_100px_52px] gap-2 px-4 py-3 text-[13px] text-[var(--text-primary)]"
+                      className={`grid ${GRID_COLS} gap-2 px-4 py-3 text-[13px] text-[var(--text-primary)]`}
                     >
                       <span className="truncate font-medium">
                         {clientLabel}
@@ -165,7 +161,7 @@ export default function PlansPage() {
                       <span className="text-[var(--text-secondary)]">
                         {formatShortDate(plan.updatedAt)}
                       </span>
-                      <div className="flex justify-center">
+                      <div className="flex flex-col items-center gap-1">
                         <button
                           type="button"
                           disabled={busy}
@@ -175,6 +171,14 @@ export default function PlansPage() {
                         >
                           <FileDown className="h-4 w-4 shrink-0" aria-hidden />
                         </button>
+                        {pdfErrors[plan.id] ? (
+                          <p
+                            role="alert"
+                            className="text-[11px] leading-tight text-[var(--status-expired)]"
+                          >
+                            {pdfErrors[plan.id]}
+                          </p>
+                        ) : null}
                       </div>
                     </li>
                   )
