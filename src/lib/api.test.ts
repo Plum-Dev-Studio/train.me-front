@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { apiFetch, ApiError } from './api'
+import { apiFetch, apiFetchBlob, ApiError } from './api'
 
 const mockFetch = vi.fn()
 vi.stubGlobal('fetch', mockFetch)
@@ -127,5 +127,51 @@ describe('apiFetch', () => {
     const headers = mockFetch.mock.calls[0][1].headers
     expect(headers['X-Custom']).toBe('value')
     expect(headers['Content-Type']).toBe('application/json')
+  })
+})
+
+describe('apiFetchBlob', () => {
+  it('returns blob and Content-Disposition with Authorization', async () => {
+    localStorage.setItem('auth_token', 'blob-token')
+    const pdfBlob = new Blob(['%PDF-1'], { type: 'application/pdf' })
+    mockFetch.mockResolvedValue({
+      ok: true,
+      headers: {
+        get: (name: string) =>
+          name.toLowerCase() === 'content-disposition'
+            ? 'attachment; filename="plan-abc.pdf"'
+            : null,
+      },
+      blob: () => Promise.resolve(pdfBlob),
+    })
+
+    const result = await apiFetchBlob('/plans/abc/pdf')
+
+    expect(result.blob).toBe(pdfBlob)
+    expect(result.contentDisposition).toContain('plan-abc.pdf')
+    expect(mockFetch).toHaveBeenCalledWith(
+      '/api/plans/abc/pdf',
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: 'Bearer blob-token',
+        }),
+      }),
+    )
+  })
+
+  it('throws ApiError on non-OK without consuming body as JSON requirement', async () => {
+    mockFetch.mockResolvedValue({
+      ok: false,
+      status: 404,
+      json: () => Promise.resolve({ message: 'Not found' }),
+    })
+
+    try {
+      await apiFetchBlob('/plans/missing/pdf')
+      expect.unreachable()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ApiError)
+      expect((error as ApiError).status).toBe(404)
+    }
   })
 })
