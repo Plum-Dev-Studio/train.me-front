@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router'
 import { MainLayout } from '@/layouts/MainLayout'
+import { PublicLayout } from '@/layouts/PublicLayout'
 import { PublicOnlyRoute } from '@/components/auth/PublicOnlyRoute'
 import { TrainerRoleRoute } from '@/components/auth/TrainerRoleRoute'
 
@@ -30,12 +31,14 @@ function App() {
   return (
     <Suspense fallback={null}>
       <Routes>
-        <Route path="/" element={<TrainersSearchPage />} />
-        <Route path="/entrenadores" element={<TrainersSearchPage />} />
-        <Route
-          path="/entrenadores/:trainerId"
-          element={<TrainerPublicProfilePage />}
-        />
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<TrainersSearchPage />} />
+          <Route path="/entrenadores" element={<TrainersSearchPage />} />
+          <Route
+            path="/entrenadores/:trainerId"
+            element={<TrainerPublicProfilePage />}
+          />
+        </Route>
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route
           path="/payments/result/success"
