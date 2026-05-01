@@ -72,7 +72,10 @@ export default function TrainerPublicProfilePage() {
   const trainer = query.data
   return (
     <div className="mx-auto flex w-full max-w-[1100px] flex-col gap-6 px-6 py-10">
-      <Link to="/entrenadores" className="text-[14px] text-[var(--text-secondary)]">
+      <Link
+        to="/entrenadores"
+        className="text-[14px] text-[var(--text-secondary)]"
+      >
         ← Volver a entrenadores
       </Link>
 
@@ -129,7 +132,10 @@ export default function TrainerPublicProfilePage() {
             </p>
           ) : null}
           {error ? (
-            <p role="alert" className="mt-2 text-[13px] text-[var(--status-expired)]">
+            <p
+              role="alert"
+              className="mt-2 text-[13px] text-[var(--status-expired)]"
+            >
               {error}
             </p>
           ) : null}

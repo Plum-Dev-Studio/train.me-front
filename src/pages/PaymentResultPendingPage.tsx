@@ -33,14 +33,13 @@ export default function PaymentResultPendingPage() {
           <div className="mt-6 rounded-xl border border-[var(--border-standard)] bg-[var(--bg-page)] px-4 py-3 text-left text-[13px] text-[var(--text-secondary)]">
             {paymentId ? <p>Payment ID: {paymentId}</p> : null}
             {status ? <p>Status: {status}</p> : null}
-            {externalReference ? (
-              <p>Referencia: {externalReference}</p>
-            ) : null}
+            {externalReference ? <p>Referencia: {externalReference}</p> : null}
           </div>
         ) : null}
         {subscriptionQuery.data ? (
           <p className="mt-3 text-[13px] text-[var(--text-secondary)]">
-            Estado actual de la suscripción: <strong>{subscriptionQuery.data.status}</strong>
+            Estado actual de la suscripción:{' '}
+            <strong>{subscriptionQuery.data.status}</strong>
           </p>
         ) : null}
         <div className="mt-8 flex justify-center">

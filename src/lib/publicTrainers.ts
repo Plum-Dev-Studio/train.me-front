@@ -48,5 +48,7 @@ export async function searchPublicTrainers(
 export async function getPublicTrainerProfile(
   trainerId: string,
 ): Promise<PublicTrainerProfile> {
-  return apiFetch<PublicTrainerProfile>(`/trainers/profiles/public/${trainerId}`)
+  return apiFetch<PublicTrainerProfile>(
+    `/trainers/profiles/public/${trainerId}`,
+  )
 }

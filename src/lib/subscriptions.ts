@@ -26,10 +26,13 @@ export interface SubscriptionResponse {
 export async function createSubscriptionCheckout(
   input: CreateSubscriptionCheckoutInput,
 ): Promise<CreateSubscriptionCheckoutResponse> {
-  return apiFetch<CreateSubscriptionCheckoutResponse>('/subscriptions/checkout', {
-    method: 'POST',
-    body: JSON.stringify(input),
-  })
+  return apiFetch<CreateSubscriptionCheckoutResponse>(
+    '/subscriptions/checkout',
+    {
+      method: 'POST',
+      body: JSON.stringify(input),
+    },
+  )
 }
 
 export async function getSubscriptionById(
