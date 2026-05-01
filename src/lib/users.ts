@@ -13,3 +13,7 @@ export interface UserResponse {
 export async function fetchUser(userId: string): Promise<UserResponse> {
   return apiFetch<UserResponse>(`/users/${userId}`)
 }
+
+export async function fetchCurrentUser(): Promise<UserResponse> {
+  return apiFetch<UserResponse>('/auth/me')
+}

@@ -2,9 +2,15 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router'
 import AuthCallbackPage from './AuthCallbackPage'
+import { fetchCurrentUser } from '@/lib/users'
+
+vi.mock('@/lib/users', () => ({
+  fetchCurrentUser: vi.fn(),
+}))
 
 beforeEach(() => {
   localStorage.clear()
+  vi.clearAllMocks()
 })
 
 function renderWithRouter(initialEntry: {
@@ -17,6 +23,7 @@ function renderWithRouter(initialEntry: {
       <Routes>
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route path="/login" element={<div>Login Page</div>} />
+        <Route path="/" element={<div>Regular Home</div>} />
         <Route path="/app" element={<div>App Home</div>} />
       </Routes>
     </MemoryRouter>,
@@ -24,17 +31,56 @@ function renderWithRouter(initialEntry: {
 }
 
 describe('AuthCallbackPage', () => {
-  it('stores token and navigates to /app on success', () => {
+  it('stores token and navigates to /app for trainer users', async () => {
+    vi.mocked(fetchCurrentUser).mockResolvedValue({
+      id: 'u-1',
+      email: 'trainer@example.com',
+      role: 'trainer',
+      isActive: true,
+      emailVerifiedAt: null,
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    })
+
     renderWithRouter({
       pathname: '/auth/callback',
       hash: '#token=my-jwt-token&expiresIn=3600',
     })
 
     expect(localStorage.getItem('auth_token')).toBe('my-jwt-token')
-    expect(screen.getByText('App Home')).toBeInTheDocument()
+    expect(await screen.findByText('App Home')).toBeInTheDocument()
+  })
+
+  it('stores token and navigates to regular home for non-trainer users', async () => {
+    vi.mocked(fetchCurrentUser).mockResolvedValue({
+      id: 'u-2',
+      email: 'user@example.com',
+      role: 'user',
+      isActive: true,
+      emailVerifiedAt: null,
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    })
+
+    renderWithRouter({
+      pathname: '/auth/callback',
+      hash: '#token=my-jwt-token&expiresIn=3600',
+    })
+
+    expect(localStorage.getItem('auth_token')).toBe('my-jwt-token')
+    expect(await screen.findByText('Regular Home')).toBeInTheDocument()
   })
 
   it('clears URL hash after successful token parse', () => {
+    vi.mocked(fetchCurrentUser).mockResolvedValue({
+      id: 'u-3',
+      email: 'trainer@example.com',
+      role: 'trainer',
+      isActive: true,
+      emailVerifiedAt: null,
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    })
     const replaceStateSpy = vi.spyOn(window.history, 'replaceState')
 
     renderWithRouter({
@@ -47,6 +93,15 @@ describe('AuthCallbackPage', () => {
   })
 
   it('uses post_login_redirect when present', () => {
+    vi.mocked(fetchCurrentUser).mockResolvedValue({
+      id: 'u-4',
+      email: 'trainer@example.com',
+      role: 'trainer',
+      isActive: true,
+      emailVerifiedAt: null,
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    })
     localStorage.setItem('post_login_redirect', '/entrenadores/trainer-1')
 
     renderWithRouter({
