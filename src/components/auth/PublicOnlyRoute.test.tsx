@@ -14,7 +14,7 @@ function renderWithRouter(initialPath: string) {
         <Route element={<PublicOnlyRoute />}>
           <Route path="/login" element={<div>Login Page</div>} />
         </Route>
-        <Route path="/" element={<div>Home</div>} />
+        <Route path="/app" element={<div>App Home</div>} />
       </Routes>
     </MemoryRouter>,
   )
@@ -24,13 +24,13 @@ describe('PublicOnlyRoute', () => {
   it('renders child route when no token', () => {
     renderWithRouter('/login')
     expect(screen.getByText('Login Page')).toBeInTheDocument()
-    expect(screen.queryByText('Home')).not.toBeInTheDocument()
+    expect(screen.queryByText('App Home')).not.toBeInTheDocument()
   })
 
-  it('redirects to / when token exists', () => {
+  it('redirects to /app when token exists', () => {
     localStorage.setItem('auth_token', 'valid-token')
     renderWithRouter('/login')
-    expect(screen.getByText('Home')).toBeInTheDocument()
+    expect(screen.getByText('App Home')).toBeInTheDocument()
     expect(screen.queryByText('Login Page')).not.toBeInTheDocument()
   })
 })

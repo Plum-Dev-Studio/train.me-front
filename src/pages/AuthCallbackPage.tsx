@@ -11,8 +11,12 @@ export default function AuthCallbackPage() {
 
     if (token) {
       localStorage.setItem('auth_token', token)
+      const redirectTo = localStorage.getItem('post_login_redirect')
+      if (redirectTo) {
+        localStorage.removeItem('post_login_redirect')
+      }
       window.history.replaceState(null, '', location.pathname)
-      navigate('/', { replace: true })
+      navigate(redirectTo || '/app', { replace: true })
       return
     }
 

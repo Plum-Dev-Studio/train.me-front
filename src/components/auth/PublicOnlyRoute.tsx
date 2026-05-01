@@ -4,7 +4,7 @@ export function PublicOnlyRoute() {
   const token = localStorage.getItem('auth_token')
 
   if (token) {
-    return <Navigate to="/" replace />
+    return <Navigate to="/app" replace />
   }
 
   return <Outlet />

@@ -10,14 +10,45 @@ const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
 const ExercisesPage = lazy(() => import('@/pages/ExercisesPage'))
 const LoginPage = lazy(() => import('@/pages/LoginPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
+const PaymentResultFailurePage = lazy(
+  () => import('@/pages/PaymentResultFailurePage'),
+)
+const PaymentResultPendingPage = lazy(
+  () => import('@/pages/PaymentResultPendingPage'),
+)
+const PaymentResultSuccessPage = lazy(
+  () => import('@/pages/PaymentResultSuccessPage'),
+)
 const PlaceholderPage = lazy(() => import('@/pages/PlaceholderPage'))
 const PlansPage = lazy(() => import('@/pages/PlansPage'))
+const TrainerPublicProfilePage = lazy(
+  () => import('@/pages/TrainerPublicProfilePage'),
+)
+const TrainersSearchPage = lazy(() => import('@/pages/TrainersSearchPage'))
 
 function App() {
   return (
     <Suspense fallback={null}>
       <Routes>
+        <Route path="/" element={<TrainersSearchPage />} />
+        <Route path="/entrenadores" element={<TrainersSearchPage />} />
+        <Route
+          path="/entrenadores/:trainerId"
+          element={<TrainerPublicProfilePage />}
+        />
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
+        <Route
+          path="/payments/result/success"
+          element={<PaymentResultSuccessPage />}
+        />
+        <Route
+          path="/payments/result/failure"
+          element={<PaymentResultFailurePage />}
+        />
+        <Route
+          path="/payments/result/pending"
+          element={<PaymentResultPendingPage />}
+        />
 
         {/* Public-only: redirect to home if already logged in */}
         <Route element={<PublicOnlyRoute />}>
@@ -26,7 +57,7 @@ function App() {
 
         {/* Protected: redirect to login if not authenticated */}
         <Route element={<ProtectedRoute />}>
-          <Route element={<MainLayout />}>
+          <Route path="/app" element={<MainLayout />}>
             <Route index element={<DashboardPage />} />
             <Route path="clientes" element={<ClientsPage />} />
             <Route path="planes" element={<PlansPage />} />
@@ -37,6 +68,7 @@ function App() {
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Route>
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>
   )

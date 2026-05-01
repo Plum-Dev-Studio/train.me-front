@@ -17,21 +17,21 @@ function renderWithRouter(initialEntry: {
       <Routes>
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route path="/login" element={<div>Login Page</div>} />
-        <Route path="/" element={<div>Home</div>} />
+        <Route path="/app" element={<div>App Home</div>} />
       </Routes>
     </MemoryRouter>,
   )
 }
 
 describe('AuthCallbackPage', () => {
-  it('stores token and navigates to / on success', () => {
+  it('stores token and navigates to /app on success', () => {
     renderWithRouter({
       pathname: '/auth/callback',
       hash: '#token=my-jwt-token&expiresIn=3600',
     })
 
     expect(localStorage.getItem('auth_token')).toBe('my-jwt-token')
-    expect(screen.getByText('Home')).toBeInTheDocument()
+    expect(screen.getByText('App Home')).toBeInTheDocument()
   })
 
   it('clears URL hash after successful token parse', () => {
@@ -44,6 +44,18 @@ describe('AuthCallbackPage', () => {
 
     expect(replaceStateSpy).toHaveBeenCalledWith(null, '', '/auth/callback')
     replaceStateSpy.mockRestore()
+  })
+
+  it('uses post_login_redirect when present', () => {
+    localStorage.setItem('post_login_redirect', '/entrenadores/trainer-1')
+
+    renderWithRouter({
+      pathname: '/auth/callback',
+      hash: '#token=my-jwt-token',
+    })
+
+    expect(screen.queryByText('App Home')).not.toBeInTheDocument()
+    expect(localStorage.getItem('post_login_redirect')).toBeNull()
   })
 
   it('navigates to /login on account_deactivated error', () => {
