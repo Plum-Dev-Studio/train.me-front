@@ -10,6 +10,21 @@ function formatPrice(price: number | null): string {
   return `$${price.toLocaleString('es-AR')}/mes`
 }
 
+function checkoutErrorMessage(error: ApiError): string {
+  const body = error.body as { message?: string } | null
+  const apiMessage = body?.message ?? ''
+  if (apiMessage.includes('monthly price is not configured')) {
+    return 'Este entrenador todavía no configuró su precio mensual.'
+  }
+  if (apiMessage.includes('MercadoPago account is not connected')) {
+    return 'Este entrenador todavía no tiene habilitados los cobros en Mercado Pago.'
+  }
+  if (error.status === 401 || error.status === 403) {
+    return 'Necesitás iniciar sesión como cliente para suscribirte.'
+  }
+  return `No pudimos iniciar la suscripción (${error.status}). Intentá nuevamente.`
+}
+
 export default function TrainerPublicProfilePage() {
   const { trainerId = '' } = useParams()
   const navigate = useNavigate()
@@ -44,9 +59,7 @@ export default function TrainerPublicProfilePage() {
       window.location.href = result.checkoutUrl
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(
-          `No pudimos iniciar la suscripción (${err.status}). Verificá tu cuenta e intentá nuevamente.`,
-        )
+        setError(checkoutErrorMessage(err))
       } else {
         setError('No pudimos iniciar la suscripción. Intentá nuevamente.')
       }
@@ -128,7 +141,8 @@ export default function TrainerPublicProfilePage() {
           </button>
           {trainer.monthlyPrice === null ? (
             <p className="mt-2 text-[13px] text-[var(--text-secondary)]">
-              Este entrenador aún no configuró un precio mensual.
+              Suscripción no disponible: este entrenador aún no configuró un
+              precio mensual.
             </p>
           ) : null}
           {error ? (

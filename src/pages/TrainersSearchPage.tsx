@@ -95,6 +95,11 @@ export default function TrainersSearchPage() {
                   {formatPrice(trainer.monthlyPrice)}
                 </span>
               </div>
+              <p className="mt-2 text-[12px] font-medium text-[var(--text-secondary)]">
+                {trainer.monthlyPrice === null
+                  ? 'Suscripción no disponible todavía'
+                  : 'Suscripción disponible'}
+              </p>
               <p className="mt-3 line-clamp-3 text-[14px] text-[var(--text-secondary)]">
                 {trainer.bio ?? 'Este entrenador aún no agregó una bio.'}
               </p>
@@ -124,7 +129,7 @@ export default function TrainersSearchPage() {
                   to={`/entrenadores/${trainer.id}`}
                   className="rounded-xl bg-[var(--accent-purple)] px-4 py-2 text-[14px] font-semibold text-white hover:opacity-90"
                 >
-                  Ver perfil
+                  Ver perfil y suscribirme
                 </Link>
               </div>
             </article>

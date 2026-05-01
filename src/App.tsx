@@ -22,6 +22,8 @@ const PaymentResultSuccessPage = lazy(
 )
 const PlaceholderPage = lazy(() => import('@/pages/PlaceholderPage'))
 const PlansPage = lazy(() => import('@/pages/PlansPage'))
+const SettingsPage = lazy(() => import('@/pages/SettingsPage'))
+const SubscriptionsPage = lazy(() => import('@/pages/SubscriptionsPage'))
 const TrainerPublicProfilePage = lazy(
   () => import('@/pages/TrainerPublicProfilePage'),
 )
@@ -66,8 +68,8 @@ function App() {
             <Route path="planes" element={<PlansPage />} />
             <Route path="ejercicios" element={<ExercisesPage />} />
             <Route path="agenda" element={<PlaceholderPage />} />
-            <Route path="suscripciones" element={<PlaceholderPage />} />
-            <Route path="configuracion" element={<PlaceholderPage />} />
+            <Route path="suscripciones" element={<SubscriptionsPage />} />
+            <Route path="configuracion" element={<SettingsPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Route>
