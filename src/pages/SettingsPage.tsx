@@ -56,11 +56,9 @@ export default function SettingsPage() {
           : Number.parseFloat(resolvedMonthlyPrice)
       if (
         priceValue !== null &&
-        (!Number.isFinite(priceValue) || priceValue < 0)
+        (!Number.isFinite(priceValue) || priceValue <= 0)
       ) {
-        throw new Error(
-          'El precio mensual debe ser un número mayor o igual a 0.',
-        )
+        throw new Error('El precio mensual debe ser un número mayor a 0.')
       }
       return updateTrainerProfileByUserId(currentUserQuery.data!.id, {
         displayName: resolvedDisplayName.trim(),
