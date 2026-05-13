@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router'
+import { MemoryRouter, Routes, Route } from 'react-router'
 import LoginPage from './LoginPage'
 
 function renderLoginPage() {
@@ -14,6 +14,7 @@ function renderLoginPage() {
 
 beforeEach(() => {
   vi.restoreAllMocks()
+  localStorage.clear()
 })
 
 describe('LoginPage', () => {
@@ -85,9 +86,62 @@ describe('LoginPage', () => {
     expect(hrefSetter).toHaveBeenCalledWith('/api/auth/google')
   })
 
-  it('sign up link does not trigger navigation', () => {
+  it('sign up link points to register page', () => {
     renderLoginPage()
     const link = screen.getByText('Registrate')
-    expect(link).toHaveAttribute('href', '#')
+    expect(link).toHaveAttribute('href', '/register')
+  })
+
+  it('stores token and navigates to / on successful login', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: () =>
+          Promise.resolve({ accessToken: 'jwt-123', expiresIn: 604800 }),
+      }),
+    )
+
+    const user = userEvent.setup()
+    render(
+      <MemoryRouter initialEntries={['/login']}>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<div>Home</div>} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    await user.type(screen.getByLabelText('Email'), 'test@example.com')
+    await user.type(screen.getByLabelText('Contraseña'), 'password123')
+    await user.click(screen.getByRole('button', { name: 'Iniciar sesión' }))
+
+    expect(localStorage.getItem('auth_token')).toBe('jwt-123')
+    expect(await screen.findByText('Home')).toBeInTheDocument()
+  })
+
+  it('shows error message on invalid credentials', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        json: () =>
+          Promise.resolve({
+            message: 'Invalid credentials',
+            error: 'VALIDATION_ERROR',
+          }),
+      }),
+    )
+
+    const user = userEvent.setup()
+    renderLoginPage()
+
+    await user.type(screen.getByLabelText('Email'), 'test@example.com')
+    await user.type(screen.getByLabelText('Contraseña'), 'wrong')
+    await user.click(screen.getByRole('button', { name: 'Iniciar sesión' }))
+
+    expect(
+      await screen.findByText('Email o contraseña incorrectos'),
+    ).toBeInTheDocument()
   })
 })
