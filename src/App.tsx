@@ -9,6 +9,7 @@ const ClientsPage = lazy(() => import('@/pages/ClientsPage'))
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
 const ExercisesPage = lazy(() => import('@/pages/ExercisesPage'))
 const LoginPage = lazy(() => import('@/pages/LoginPage'))
+const RegisterPage = lazy(() => import('@/pages/RegisterPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 const PlaceholderPage = lazy(() => import('@/pages/PlaceholderPage'))
 const PlansPage = lazy(() => import('@/pages/PlansPage'))
@@ -22,6 +23,7 @@ function App() {
         {/* Public-only: redirect to home if already logged in */}
         <Route element={<PublicOnlyRoute />}>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
         </Route>
 
         {/* Protected: redirect to login if not authenticated */}
