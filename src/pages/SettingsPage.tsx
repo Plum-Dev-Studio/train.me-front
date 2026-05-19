@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useLocation, useNavigate } from 'react-router'
 import { PageHeader } from '@/components/PageHeader'
+import { getMercadoPagoOAuthCallbackMessage } from '@/lib/mercadoPagoOAuthCallback'
 import { fetchCurrentUser } from '@/lib/users'
 import {
   fetchTrainerProfileByUserId,
@@ -14,6 +16,8 @@ import {
 
 export default function SettingsPage() {
   const queryClient = useQueryClient()
+  const location = useLocation()
+  const navigate = useNavigate()
   const [displayName, setDisplayName] = useState<string | null>(null)
   const [bio, setBio] = useState<string | null>(null)
   const [monthlyPrice, setMonthlyPrice] = useState<string | null>(null)
@@ -36,6 +40,30 @@ export default function SettingsPage() {
     queryFn: getMercadoPagoConnectionStatus,
     enabled: currentUserQuery.data?.role === 'trainer',
   })
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const status = params.get('status')
+    if (!status) {
+      return
+    }
+
+    const callbackMessage = getMercadoPagoOAuthCallbackMessage(
+      status,
+      params.get('reason'),
+    )
+    if (callbackMessage) {
+      // OAuth redirect lands with query params; persist feedback before clearing URL.
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- external redirect URL
+      setMessage(callbackMessage)
+    }
+
+    if (status === 'success') {
+      void queryClient.invalidateQueries({ queryKey: ['mercadoPagoStatus'] })
+    }
+
+    navigate({ pathname: location.pathname, search: '' }, { replace: true })
+  }, [location.pathname, location.search, navigate, queryClient])
 
   const resolvedDisplayName =
     displayName ?? profileQuery.data?.displayName ?? ''
@@ -113,6 +141,14 @@ export default function SettingsPage() {
       />
 
       <div className="flex flex-1 flex-col gap-6 overflow-auto p-8">
+        {message ? (
+          <p
+            role="status"
+            className="rounded-xl border border-[var(--border-standard)] bg-[var(--bg-page)] px-4 py-3 text-[14px] text-[var(--text-secondary)]"
+          >
+            {message}
+          </p>
+        ) : null}
         {currentUserQuery.isPending || profileQuery.isPending ? (
           <p className="text-[14px] text-[var(--text-secondary)]">Cargando…</p>
         ) : currentUserQuery.isError || profileQuery.isError ? (
@@ -172,11 +208,6 @@ export default function SettingsPage() {
                 >
                   {saveMutation.isPending ? 'Guardando…' : 'Guardar cambios'}
                 </button>
-                {message ? (
-                  <p className="text-[13px] text-[var(--text-secondary)]">
-                    {message}
-                  </p>
-                ) : null}
               </div>
             </section>
 
