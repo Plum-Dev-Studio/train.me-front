@@ -4,7 +4,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import SettingsPage from './SettingsPage'
 import { fetchCurrentUser } from '@/lib/users'
-import { fetchTrainerProfileByUserId } from '@/lib/trainerProfiles'
+import {
+  fetchTrainerProfileByUserId,
+  type TrainerProfileResponse,
+} from '@/lib/trainerProfiles'
 import { getMercadoPagoConnectionStatus } from '@/lib/payments'
 
 vi.mock('@/lib/users', () => ({
@@ -32,12 +35,14 @@ const trainerUser = {
   updatedAt: '2026-01-01T00:00:00.000Z',
 }
 
-const trainerProfile = {
+const trainerProfile: TrainerProfileResponse = {
   id: 'profile-1',
   userId: 'trainer-1',
   displayName: 'Coach Test',
   bio: null,
+  experienceYears: null,
   monthlyPrice: 25000,
+  certifications: null,
   isPublic: true,
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
