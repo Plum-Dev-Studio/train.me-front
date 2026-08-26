@@ -1,5 +1,6 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router'
+import { fetchCurrentUser } from '@/lib/users'
 
 const ERROR_MESSAGES: Record<string, string> = {
   verification_failed: 'El enlace de verificación es inválido o expiró.',
@@ -10,32 +11,61 @@ const ERROR_MESSAGES: Record<string, string> = {
 export default function AuthCallbackPage() {
   const location = useLocation()
   const navigate = useNavigate()
-
-  const hashParams = useMemo(
-    () => new URLSearchParams(location.hash.replace(/^#/, '')),
-    [location.hash],
-  )
-  const searchParams = useMemo(
-    () => new URLSearchParams(location.search),
-    [location.search],
-  )
-
-  const token = hashParams.get('token')
-  const error = searchParams.get('error')
-  const errorMessage = error ? (ERROR_MESSAGES[error] ?? null) : null
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   useEffect(() => {
-    if (token) {
-      localStorage.setItem('auth_token', token)
-      window.history.replaceState(null, '', location.pathname)
-      navigate('/', { replace: true })
-      return
-    }
+    let active = true
 
-    if (!errorMessage) {
+    async function resolveAuthCallback() {
+      const hashParams = new URLSearchParams(location.hash.replace(/^#/, ''))
+      const token = hashParams.get('token')
+
+      if (token) {
+        localStorage.setItem('auth_token', token)
+        const redirectTo = localStorage.getItem('post_login_redirect')
+        if (redirectTo) {
+          localStorage.removeItem('post_login_redirect')
+        }
+        window.history.replaceState(null, '', location.pathname)
+        if (redirectTo) {
+          navigate(redirectTo, { replace: true })
+          return
+        }
+
+        try {
+          const currentUser = await fetchCurrentUser()
+          if (!active) return
+          navigate(currentUser.role === 'trainer' ? '/app' : '/', {
+            replace: true,
+          })
+        } catch {
+          localStorage.removeItem('auth_token')
+          if (!active) return
+          navigate('/login', { replace: true })
+        }
+        return
+      }
+
+      const searchParams = new URLSearchParams(location.search)
+      const error = searchParams.get('error')
+
+      if (error) {
+        const message =
+          ERROR_MESSAGES[error] ?? 'Error de autenticación. Intentá de nuevo.'
+        if (!active) return
+        setErrorMessage(message)
+        return
+      }
+
       navigate('/login', { replace: true })
     }
-  }, [token, errorMessage, location.pathname, navigate])
+
+    void resolveAuthCallback()
+
+    return () => {
+      active = false
+    }
+  }, [location, navigate])
 
   if (!errorMessage) return null
 

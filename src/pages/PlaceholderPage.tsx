@@ -1,12 +1,12 @@
 import { useLocation } from 'react-router'
 
 const pageTitles: Record<string, string> = {
-  '/clientes': 'Clientes',
-  '/planes': 'Planes de Entrenamiento',
-  '/ejercicios': 'Ejercicios',
-  '/agenda': 'Agenda',
-  '/suscripciones': 'Suscripciones',
-  '/configuracion': 'Configuración',
+  '/app/clientes': 'Clientes',
+  '/app/planes': 'Planes de Entrenamiento',
+  '/app/ejercicios': 'Ejercicios',
+  '/app/agenda': 'Agenda',
+  '/app/suscripciones': 'Suscripciones',
+  '/app/configuracion': 'Configuración',
 }
 
 export default function PlaceholderPage() {

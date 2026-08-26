@@ -13,12 +13,12 @@ import { useTrainerDashboard } from '@/contexts/useTrainerDashboard'
 import { initialsFromFullName } from '@/lib/trainerDashboard'
 
 const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Panel' },
-  { to: '/clientes', icon: Users, label: 'Clientes' },
-  { to: '/planes', icon: ClipboardList, label: 'Planes de Entrenamiento' },
-  { to: '/ejercicios', icon: Dumbbell, label: 'Ejercicios' },
-  { to: '/agenda', icon: Calendar, label: 'Agenda' },
-  { to: '/suscripciones', icon: CreditCard, label: 'Suscripciones' },
+  { to: '/app', icon: LayoutDashboard, label: 'Panel' },
+  { to: '/app/clientes', icon: Users, label: 'Clientes' },
+  { to: '/app/planes', icon: ClipboardList, label: 'Planes de Entrenamiento' },
+  { to: '/app/ejercicios', icon: Dumbbell, label: 'Ejercicios' },
+  { to: '/app/agenda', icon: Calendar, label: 'Agenda' },
+  { to: '/app/suscripciones', icon: CreditCard, label: 'Suscripciones' },
 ]
 
 export function Sidebar() {
@@ -79,7 +79,7 @@ export function Sidebar() {
       <div className="flex flex-col gap-1">
         <div className="mb-1 h-px w-full bg-[#FFFFFF15]" />
         <NavLink
-          to="/configuracion"
+          to="/app/configuracion"
           className={({ isActive }) =>
             `flex items-center gap-3 rounded-xl px-4 py-3 text-[14px] transition-colors ${
               isActive
