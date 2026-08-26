@@ -113,24 +113,37 @@ describe('AuthCallbackPage', () => {
     expect(localStorage.getItem('post_login_redirect')).toBeNull()
   })
 
-  it('navigates to /login on account_deactivated error', () => {
+  it('shows error message for account_deactivated', () => {
     renderWithRouter({
       pathname: '/auth/callback',
       search: '?error=account_deactivated',
     })
 
     expect(localStorage.getItem('auth_token')).toBeNull()
-    expect(screen.getByText('Login Page')).toBeInTheDocument()
+    expect(screen.getByText(/Tu cuenta fue desactivada/i)).toBeInTheDocument()
   })
 
-  it('navigates to /login on auth_failed error', () => {
+  it('shows error message for auth_failed', () => {
     renderWithRouter({
       pathname: '/auth/callback',
       search: '?error=auth_failed',
     })
 
     expect(localStorage.getItem('auth_token')).toBeNull()
-    expect(screen.getByText('Login Page')).toBeInTheDocument()
+    expect(screen.getByText(/Error de autenticación/i)).toBeInTheDocument()
+  })
+
+  it('shows error message for verification_failed', () => {
+    renderWithRouter({
+      pathname: '/auth/callback',
+      search: '?error=verification_failed',
+    })
+
+    expect(localStorage.getItem('auth_token')).toBeNull()
+    expect(
+      screen.getByText(/enlace de verificación es inválido o expiró/i),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Volver al inicio de sesión')).toBeInTheDocument()
   })
 
   it('navigates to /login when no hash and no error', () => {
