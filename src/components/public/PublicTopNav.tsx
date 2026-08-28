@@ -104,11 +104,11 @@ export function PublicTopNav() {
                     </Link>
                   ) : (
                     <Link
-                      to="/"
+                      to="/me"
                       onClick={() => setMenuOpen(false)}
                       className="rounded-lg px-3 py-2 text-[14px] text-[var(--text-primary)] hover:bg-[var(--bg-page)]"
                     >
-                      Mi inicio
+                      Mi plan
                     </Link>
                   )}
                   <Link

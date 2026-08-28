@@ -60,3 +60,7 @@ export async function listTrainerSubscriptions(
     `/subscriptions/trainer/me?${params.toString()}`,
   )
 }
+
+export async function fetchMySubscription(): Promise<SubscriptionResponse> {
+  return apiFetch<SubscriptionResponse>('/subscriptions/me')
+}

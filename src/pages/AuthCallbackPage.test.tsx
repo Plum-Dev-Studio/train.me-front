@@ -24,6 +24,7 @@ function renderWithRouter(initialEntry: {
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route path="/login" element={<div>Login Page</div>} />
         <Route path="/" element={<div>Regular Home</div>} />
+        <Route path="/me" element={<div>User Home</div>} />
         <Route path="/app" element={<div>App Home</div>} />
       </Routes>
     </MemoryRouter>,
@@ -51,7 +52,7 @@ describe('AuthCallbackPage', () => {
     expect(await screen.findByText('App Home')).toBeInTheDocument()
   })
 
-  it('stores token and navigates to regular home for non-trainer users', async () => {
+  it('stores token and navigates to /me for non-trainer users', async () => {
     vi.mocked(fetchCurrentUser).mockResolvedValue({
       id: 'u-2',
       email: 'user@example.com',
@@ -68,7 +69,7 @@ describe('AuthCallbackPage', () => {
     })
 
     expect(localStorage.getItem('auth_token')).toBe('my-jwt-token')
-    expect(await screen.findByText('Regular Home')).toBeInTheDocument()
+    expect(await screen.findByText('User Home')).toBeInTheDocument()
   })
 
   it('clears URL hash after successful token parse', () => {

@@ -42,6 +42,7 @@ function renderLoginWithRoutes() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<div>Home</div>} />
+        <Route path="/me" element={<div>User Home</div>} />
         <Route path="/app" element={<div>App Home</div>} />
         <Route path="/entrenadores/:id" element={<div>Trainer Profile</div>} />
       </Routes>
@@ -137,7 +138,7 @@ describe('LoginPage', () => {
     expect(link).toHaveAttribute('href', '/register')
   })
 
-  it('stores token and navigates to / for a regular user', async () => {
+  it('stores token and navigates to /me for a regular user', async () => {
     stubLoginThenMe('user')
     const user = userEvent.setup()
     renderLoginWithRoutes()
@@ -147,7 +148,7 @@ describe('LoginPage', () => {
     await user.click(screen.getByRole('button', { name: 'Iniciar sesión' }))
 
     expect(localStorage.getItem('auth_token')).toBe('jwt-123')
-    expect(await screen.findByText('Home')).toBeInTheDocument()
+    expect(await screen.findByText('User Home')).toBeInTheDocument()
   })
 
   it('stores token and navigates to /app for a trainer', async () => {
