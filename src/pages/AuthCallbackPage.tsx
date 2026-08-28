@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router'
 import { fetchCurrentUser } from '@/lib/users'
+import { resolvePostLoginPath } from '@/lib/postLogin'
 
 const ERROR_MESSAGES: Record<string, string> = {
   verification_failed: 'El enlace de verificación es inválido o expiró.',
@@ -22,22 +23,11 @@ export default function AuthCallbackPage() {
 
       if (token) {
         localStorage.setItem('auth_token', token)
-        const redirectTo = localStorage.getItem('post_login_redirect')
-        if (redirectTo) {
-          localStorage.removeItem('post_login_redirect')
-        }
         window.history.replaceState(null, '', location.pathname)
-        if (redirectTo) {
-          navigate(redirectTo, { replace: true })
-          return
-        }
-
         try {
-          const currentUser = await fetchCurrentUser()
+          const path = await resolvePostLoginPath(fetchCurrentUser)
           if (!active) return
-          navigate(currentUser.role === 'trainer' ? '/app' : '/', {
-            replace: true,
-          })
+          navigate(path, { replace: true })
         } catch {
           localStorage.removeItem('auth_token')
           if (!active) return

@@ -4,6 +4,51 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Routes, Route } from 'react-router'
 import LoginPage from './LoginPage'
 
+const meUser = (role: string) => ({
+  id: 'u-1',
+  email: 'test@example.com',
+  role,
+  isActive: true,
+  emailVerifiedAt: null,
+  createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: '2026-01-01T00:00:00.000Z',
+})
+
+function stubLoginThenMe(role: string) {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async (input: RequestInfo) => {
+      const url = String(input)
+      if (url.includes('/auth/login')) {
+        return {
+          ok: true,
+          json: async () => ({ accessToken: 'jwt-123', expiresIn: 604800 }),
+        }
+      }
+      if (url.includes('/auth/me')) {
+        return {
+          ok: true,
+          json: async () => meUser(role),
+        }
+      }
+      return { ok: false, json: async () => ({}) }
+    }),
+  )
+}
+
+function renderLoginWithRoutes() {
+  return render(
+    <MemoryRouter initialEntries={['/login']}>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<div>Home</div>} />
+        <Route path="/app" element={<div>App Home</div>} />
+        <Route path="/entrenadores/:id" element={<div>Trainer Profile</div>} />
+      </Routes>
+    </MemoryRouter>,
+  )
+}
+
 function renderLoginPage() {
   return render(
     <MemoryRouter>
@@ -92,25 +137,10 @@ describe('LoginPage', () => {
     expect(link).toHaveAttribute('href', '/register')
   })
 
-  it('stores token and navigates to / on successful login', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: () =>
-          Promise.resolve({ accessToken: 'jwt-123', expiresIn: 604800 }),
-      }),
-    )
-
+  it('stores token and navigates to / for a regular user', async () => {
+    stubLoginThenMe('user')
     const user = userEvent.setup()
-    render(
-      <MemoryRouter initialEntries={['/login']}>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/" element={<div>Home</div>} />
-        </Routes>
-      </MemoryRouter>,
-    )
+    renderLoginWithRoutes()
 
     await user.type(screen.getByLabelText('Email'), 'test@example.com')
     await user.type(screen.getByLabelText('Contraseña'), 'password123')
@@ -118,6 +148,64 @@ describe('LoginPage', () => {
 
     expect(localStorage.getItem('auth_token')).toBe('jwt-123')
     expect(await screen.findByText('Home')).toBeInTheDocument()
+  })
+
+  it('stores token and navigates to /app for a trainer', async () => {
+    stubLoginThenMe('trainer')
+    const user = userEvent.setup()
+    renderLoginWithRoutes()
+
+    await user.type(screen.getByLabelText('Email'), 'trainer@example.com')
+    await user.type(screen.getByLabelText('Contraseña'), 'password123')
+    await user.click(screen.getByRole('button', { name: 'Iniciar sesión' }))
+
+    expect(localStorage.getItem('auth_token')).toBe('jwt-123')
+    expect(await screen.findByText('App Home')).toBeInTheDocument()
+  })
+
+  it('uses post_login_redirect when present', async () => {
+    stubLoginThenMe('trainer')
+    localStorage.setItem('post_login_redirect', '/entrenadores/trainer-1')
+    const user = userEvent.setup()
+    renderLoginWithRoutes()
+
+    await user.type(screen.getByLabelText('Email'), 'trainer@example.com')
+    await user.type(screen.getByLabelText('Contraseña'), 'password123')
+    await user.click(screen.getByRole('button', { name: 'Iniciar sesión' }))
+
+    expect(await screen.findByText('Trainer Profile')).toBeInTheDocument()
+    expect(localStorage.getItem('post_login_redirect')).toBeNull()
+  })
+
+  it('clears token if /auth/me fails after login', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo) => {
+        const url = String(input)
+        if (url.includes('/auth/login')) {
+          return {
+            ok: true,
+            json: async () => ({ accessToken: 'jwt-123', expiresIn: 604800 }),
+          }
+        }
+        return {
+          ok: false,
+          json: async () => ({ message: 'Unauthorized' }),
+        }
+      }),
+    )
+
+    const user = userEvent.setup()
+    renderLoginWithRoutes()
+
+    await user.type(screen.getByLabelText('Email'), 'test@example.com')
+    await user.type(screen.getByLabelText('Contraseña'), 'password123')
+    await user.click(screen.getByRole('button', { name: 'Iniciar sesión' }))
+
+    expect(
+      await screen.findByText('Error al iniciar sesión'),
+    ).toBeInTheDocument()
+    expect(localStorage.getItem('auth_token')).toBeNull()
   })
 
   it('shows error message on invalid credentials', async () => {

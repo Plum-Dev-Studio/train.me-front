@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { PasswordInput } from '@/components/ui/PasswordInput'
 import { login } from '@/lib/auth'
+import { fetchCurrentUser } from '@/lib/users'
+import { resolvePostLoginPath } from '@/lib/postLogin'
 import { ApiError } from '@/lib/api'
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? '/api'
@@ -30,7 +32,13 @@ export default function LoginPage() {
     try {
       const { accessToken } = await login({ email, password })
       localStorage.setItem('auth_token', accessToken)
-      navigate('/', { replace: true })
+      try {
+        const path = await resolvePostLoginPath(fetchCurrentUser)
+        navigate(path, { replace: true })
+      } catch {
+        localStorage.removeItem('auth_token')
+        setError('Error al iniciar sesión')
+      }
     } catch (err) {
       if (err instanceof ApiError) {
         const body = err.body as { message?: string; error?: string } | null
