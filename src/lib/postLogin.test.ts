@@ -15,8 +15,11 @@ describe('homePathForRole', () => {
     expect(homePathForRole('trainer')).toBe('/app')
   })
 
+  it('sends users to /me', () => {
+    expect(homePathForRole('user')).toBe('/me')
+  })
+
   it('sends other roles to /', () => {
-    expect(homePathForRole('user')).toBe('/')
     expect(homePathForRole('admin')).toBe('/')
   })
 })

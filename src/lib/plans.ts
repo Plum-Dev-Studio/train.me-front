@@ -39,6 +39,84 @@ export async function fetchPlansByTrainer(
   return apiFetch<PlanDto[]>(`/plans?${params.toString()}`)
 }
 
+export async function fetchMyPlans(): Promise<PlanDto[]> {
+  return apiFetch<PlanDto[]>('/plans')
+}
+
+export function pickUserFacingPlan(plans: PlanDto[]): PlanDto | null {
+  if (plans.length === 0) return null
+  const published = plans.filter((plan) => plan.status === 'published')
+  const pool = published.length > 0 ? published : plans
+  return (
+    [...pool].sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    )[0] ?? null
+  )
+}
+
+export interface SnapshotExerciseNode {
+  id: string
+  exerciseId: string
+  order: number
+  reps: number
+  weight?: number
+  restAfterSec?: number
+  notes?: string
+}
+
+export interface SnapshotBlockNode {
+  id: string
+  name: string
+  order: number
+  rounds: number
+  restBetweenRoundsSec?: number
+  notes?: string
+  exercises: SnapshotExerciseNode[]
+}
+
+export interface SnapshotRoutineNode {
+  id: string
+  name: string
+  order: number
+  blocks: SnapshotBlockNode[]
+}
+
+export interface SnapshotNutrition {
+  dailyCaloriesKcal?: number
+  proteinG?: number
+  carbsG?: number
+  fatG?: number
+  notes?: string
+  meals?: Array<{
+    name?: string
+    caloriesKcal?: number
+    proteinG?: number
+    carbsG?: number
+    fatG?: number
+    notes?: string
+  }>
+}
+
+export interface PlanSnapshotDto {
+  id: string
+  planId: string
+  payload: {
+    routines: SnapshotRoutineNode[]
+    nutrition: SnapshotNutrition | null
+    takenAt: string
+  }
+  createdAt: string
+}
+
+export async function fetchPlanSnapshot(
+  planId: string,
+): Promise<PlanSnapshotDto> {
+  return apiFetch<PlanSnapshotDto>(
+    `/plans/${encodeURIComponent(planId)}/snapshot`,
+  )
+}
+
 export interface PlansWithUsers {
   plans: PlanDto[]
   usersById: Record<string, UserResponse>
@@ -77,12 +155,19 @@ export function filenameFromContentDisposition(
   return plain2?.[1]?.replace(/^["']|["']$/g, '') ?? null
 }
 
+export type PlanPdfSection = 'full' | 'exercises' | 'nutrition'
+
 /**
  * Download plan PDF via GET /plans/:id/pdf (same auth as apiFetch).
  * Uses object URL + temporary anchor; revokes URL after click.
  */
-export async function downloadPlanPdf(planId: string): Promise<void> {
-  const endpoint = `/plans/${encodeURIComponent(planId)}/pdf`
+export async function downloadPlanPdf(
+  planId: string,
+  section: PlanPdfSection = 'full',
+): Promise<void> {
+  const params =
+    section === 'full' ? '' : `?section=${encodeURIComponent(section)}`
+  const endpoint = `/plans/${encodeURIComponent(planId)}/pdf${params}`
   const { blob, contentDisposition } = await apiFetchBlob(endpoint, {
     method: 'GET',
   })

@@ -4,6 +4,7 @@ import { MainLayout } from '@/layouts/MainLayout'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { PublicOnlyRoute } from '@/components/auth/PublicOnlyRoute'
 import { TrainerRoleRoute } from '@/components/auth/TrainerRoleRoute'
+import { UserRoleRoute } from '@/components/auth/UserRoleRoute'
 
 const AuthCallbackPage = lazy(() => import('@/pages/AuthCallbackPage'))
 const ClientsPage = lazy(() => import('@/pages/ClientsPage'))
@@ -29,6 +30,7 @@ const TrainerPublicProfilePage = lazy(
   () => import('@/pages/TrainerPublicProfilePage'),
 )
 const TrainersSearchPage = lazy(() => import('@/pages/TrainersSearchPage'))
+const UserDashboardPage = lazy(() => import('@/pages/UserDashboardPage'))
 
 function App() {
   return (
@@ -41,6 +43,9 @@ function App() {
             path="/entrenadores/:trainerId"
             element={<TrainerPublicProfilePage />}
           />
+          <Route element={<UserRoleRoute />}>
+            <Route path="/me" element={<UserDashboardPage />} />
+          </Route>
         </Route>
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route

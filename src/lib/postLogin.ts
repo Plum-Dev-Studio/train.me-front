@@ -8,8 +8,10 @@ export function consumePostLoginRedirect(): string | null {
   return redirectTo
 }
 
-export function homePathForRole(role: string): '/app' | '/' {
-  return role === 'trainer' ? '/app' : '/'
+export function homePathForRole(role: string): '/app' | '/me' | '/' {
+  if (role === 'trainer') return '/app'
+  if (role === 'user') return '/me'
+  return '/'
 }
 
 export async function resolvePostLoginPath(
