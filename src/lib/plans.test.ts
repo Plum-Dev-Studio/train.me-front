@@ -3,6 +3,8 @@ import {
   planStatusLabel,
   filenameFromContentDisposition,
   downloadPlanPdf,
+  pickUserFacingPlan,
+  type PlanDto,
 } from './plans'
 import * as apiModule from './api'
 
@@ -65,5 +67,63 @@ describe('downloadPlanPdf', () => {
     expect(clickSpy).toHaveBeenCalled()
     expect(anchor).toBeDefined()
     expect(anchor!.download).toBe('plan-id.pdf')
+  })
+
+  it('appends section query for exercises or nutrition', async () => {
+    const clickSpy = vi.fn()
+    const realCreate = document.createElement.bind(document)
+    vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
+      if (tag === 'a') {
+        const el = realCreate('a')
+        el.click = clickSpy
+        return el
+      }
+      return realCreate(tag)
+    })
+
+    await downloadPlanPdf('plan-uuid-1', 'exercises')
+
+    expect(apiModule.apiFetchBlob).toHaveBeenCalledWith(
+      '/plans/plan-uuid-1/pdf?section=exercises',
+      { method: 'GET' },
+    )
+  })
+})
+
+describe('pickUserFacingPlan', () => {
+  const base: PlanDto = {
+    id: 'p-1',
+    trainerId: 't-1',
+    userId: 'u-1',
+    templateId: null,
+    status: 'draft',
+    startDate: null,
+    endDate: null,
+    notes: null,
+    nutrition: null,
+    createdAt: '2026-08-01T00:00:00.000Z',
+    updatedAt: '2026-08-01T00:00:00.000Z',
+  }
+
+  it('returns null for an empty list', () => {
+    expect(pickUserFacingPlan([])).toBeNull()
+  })
+
+  it('prefers published over draft', () => {
+    const picked = pickUserFacingPlan([
+      {
+        ...base,
+        id: 'draft',
+        status: 'draft',
+        updatedAt: '2026-08-10T00:00:00.000Z',
+      },
+      {
+        ...base,
+        id: 'pub',
+        status: 'published',
+        updatedAt: '2026-08-02T00:00:00.000Z',
+      },
+    ])
+    expect(picked?.id).toBe('pub')
   })
 })
