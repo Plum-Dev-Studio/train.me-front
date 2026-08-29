@@ -10,9 +10,7 @@ const AuthCallbackPage = lazy(() => import('@/pages/AuthCallbackPage'))
 const ClientsPage = lazy(() => import('@/pages/ClientsPage'))
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
 const ExercisesPage = lazy(() => import('@/pages/ExercisesPage'))
-const NutritionCatalogPage = lazy(
-  () => import('@/pages/NutritionCatalogPage'),
-)
+const NutritionCatalogPage = lazy(() => import('@/pages/NutritionCatalogPage'))
 const LoginPage = lazy(() => import('@/pages/LoginPage'))
 const RegisterPage = lazy(() => import('@/pages/RegisterPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))

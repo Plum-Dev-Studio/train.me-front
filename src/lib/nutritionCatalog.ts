@@ -8,9 +8,7 @@ export interface NutritionCatalogItem {
   template: SnapshotNutrition
 }
 
-export async function fetchNutritionCatalog(): Promise<
-  NutritionCatalogItem[]
-> {
+export async function fetchNutritionCatalog(): Promise<NutritionCatalogItem[]> {
   return apiFetch<NutritionCatalogItem[]>('/nutrition-catalog')
 }
 
