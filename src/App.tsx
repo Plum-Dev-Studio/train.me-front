@@ -10,6 +10,7 @@ const AuthCallbackPage = lazy(() => import('@/pages/AuthCallbackPage'))
 const ClientsPage = lazy(() => import('@/pages/ClientsPage'))
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
 const ExercisesPage = lazy(() => import('@/pages/ExercisesPage'))
+const NutritionCatalogPage = lazy(() => import('@/pages/NutritionCatalogPage'))
 const LoginPage = lazy(() => import('@/pages/LoginPage'))
 const RegisterPage = lazy(() => import('@/pages/RegisterPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
@@ -74,6 +75,7 @@ function App() {
             <Route path="clientes" element={<ClientsPage />} />
             <Route path="planes" element={<PlansPage />} />
             <Route path="ejercicios" element={<ExercisesPage />} />
+            <Route path="nutricion" element={<NutritionCatalogPage />} />
             <Route path="agenda" element={<PlaceholderPage />} />
             <Route path="suscripciones" element={<SubscriptionsPage />} />
             <Route path="configuracion" element={<SettingsPage />} />
