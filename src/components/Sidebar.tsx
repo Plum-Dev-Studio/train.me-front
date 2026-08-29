@@ -5,6 +5,7 @@ import {
   Users,
   ClipboardList,
   Calendar,
+  Apple,
   CreditCard,
   Settings,
   LogOut,
@@ -17,6 +18,7 @@ const navItems = [
   { to: '/app/clientes', icon: Users, label: 'Clientes' },
   { to: '/app/planes', icon: ClipboardList, label: 'Planes de Entrenamiento' },
   { to: '/app/ejercicios', icon: Dumbbell, label: 'Ejercicios' },
+  { to: '/app/nutricion', icon: Apple, label: 'Nutrición' },
   { to: '/app/agenda', icon: Calendar, label: 'Agenda' },
   { to: '/app/suscripciones', icon: CreditCard, label: 'Suscripciones' },
 ]
