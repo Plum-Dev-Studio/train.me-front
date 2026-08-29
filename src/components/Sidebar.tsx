@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   Users,
   ClipboardList,
+  Layers,
   Calendar,
   Apple,
   CreditCard,
@@ -16,6 +17,7 @@ import { initialsFromFullName } from '@/lib/trainerDashboard'
 const navItems = [
   { to: '/app', icon: LayoutDashboard, label: 'Panel' },
   { to: '/app/clientes', icon: Users, label: 'Clientes' },
+  { to: '/app/plantillas', icon: Layers, label: 'Plantillas' },
   { to: '/app/planes', icon: ClipboardList, label: 'Planes de Entrenamiento' },
   { to: '/app/ejercicios', icon: Dumbbell, label: 'Ejercicios' },
   { to: '/app/nutricion', icon: Apple, label: 'Nutrición' },

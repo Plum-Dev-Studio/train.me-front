@@ -43,6 +43,23 @@ export async function fetchMyPlans(): Promise<PlanDto[]> {
   return apiFetch<PlanDto[]>('/plans')
 }
 
+export async function createPlanFromTemplate(input: {
+  trainerId: string
+  userId: string
+  templateId: string
+}): Promise<PlanDto> {
+  return apiFetch<PlanDto>('/plans', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  })
+}
+
+export async function publishPlan(planId: string): Promise<PlanDto> {
+  return apiFetch<PlanDto>(`/plans/${encodeURIComponent(planId)}/publish`, {
+    method: 'POST',
+  })
+}
+
 export function pickUserFacingPlan(plans: PlanDto[]): PlanDto | null {
   if (plans.length === 0) return null
   const published = plans.filter((plan) => plan.status === 'published')

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router'
 import { FileDown } from 'lucide-react'
 import { PageHeader } from '@/components/PageHeader'
 import { useTrainerDashboard } from '@/contexts/useTrainerDashboard'
@@ -96,6 +97,12 @@ export default function PlansPage() {
       />
 
       <div className="flex flex-1 flex-col gap-4 overflow-auto p-8">
+        <Link
+          to="/app/plantillas"
+          className="w-fit text-[14px] font-semibold text-[var(--accent-purple)] hover:opacity-80"
+        >
+          Armar o asignar una plantilla
+        </Link>
         {query.isPending ? (
           <p className="text-[14px] text-[var(--text-secondary)]">
             Cargando planes…
