@@ -2,8 +2,10 @@ import { useLocation } from 'react-router'
 
 const pageTitles: Record<string, string> = {
   '/app/clientes': 'Clientes',
+  '/app/plantillas': 'Plantillas',
   '/app/planes': 'Planes de Entrenamiento',
   '/app/ejercicios': 'Ejercicios',
+  '/app/nutricion': 'Nutrición',
   '/app/agenda': 'Agenda',
   '/app/suscripciones': 'Suscripciones',
   '/app/configuracion': 'Configuración',

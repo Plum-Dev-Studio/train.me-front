@@ -4,6 +4,8 @@ import {
   filenameFromContentDisposition,
   downloadPlanPdf,
   pickUserFacingPlan,
+  createPlanFromTemplate,
+  publishPlan,
   type PlanDto,
 } from './plans'
 import * as apiModule from './api'
@@ -125,5 +127,74 @@ describe('pickUserFacingPlan', () => {
       },
     ])
     expect(picked?.id).toBe('pub')
+  })
+})
+
+describe('createPlanFromTemplate', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('POSTs /plans', async () => {
+    const created: PlanDto = {
+      ...{
+        id: 'plan-1',
+        trainerId: 'tr-1',
+        userId: 'u-1',
+        templateId: 'pt-1',
+        status: 'draft',
+        startDate: null,
+        endDate: null,
+        notes: null,
+        nutrition: null,
+        createdAt: '2026-08-01T00:00:00.000Z',
+        updatedAt: '2026-08-01T00:00:00.000Z',
+      },
+    }
+    vi.spyOn(apiModule, 'apiFetch').mockResolvedValue(created)
+
+    const result = await createPlanFromTemplate({
+      trainerId: 'tr-1',
+      userId: 'u-1',
+      templateId: 'pt-1',
+    })
+
+    expect(apiModule.apiFetch).toHaveBeenCalledWith('/plans', {
+      method: 'POST',
+      body: JSON.stringify({
+        trainerId: 'tr-1',
+        userId: 'u-1',
+        templateId: 'pt-1',
+      }),
+    })
+    expect(result.id).toBe('plan-1')
+  })
+})
+
+describe('publishPlan', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('POSTs /plans/:id/publish', async () => {
+    vi.spyOn(apiModule, 'apiFetch').mockResolvedValue({
+      id: 'plan-1',
+      trainerId: 'tr-1',
+      userId: 'u-1',
+      templateId: 'pt-1',
+      status: 'published',
+      startDate: null,
+      endDate: null,
+      notes: null,
+      nutrition: null,
+      createdAt: '2026-08-01T00:00:00.000Z',
+      updatedAt: '2026-08-01T00:00:00.000Z',
+    })
+
+    await publishPlan('plan-1')
+
+    expect(apiModule.apiFetch).toHaveBeenCalledWith('/plans/plan-1/publish', {
+      method: 'POST',
+    })
   })
 })
