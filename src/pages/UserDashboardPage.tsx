@@ -24,6 +24,7 @@ import {
   sortRoutinesByOrder,
   todayMondayIndex,
 } from '@/lib/routineWeekday'
+import { StudentNutritionPanel } from '@/components/dashboard/StudentNutritionPanel'
 
 const SUB_STATUS_LABEL: Record<string, string> = {
   pending: 'Pendiente',
@@ -32,6 +33,7 @@ const SUB_STATUS_LABEL: Record<string, string> = {
   expired: 'Vencida',
 }
 
+type DashboardSection = 'ejercicio' | 'nutricion'
 type RoutineTab = 'hoy' | 'dia' | 'global'
 
 function RoutineList({ routines }: { routines: SnapshotRoutineNode[] }) {
@@ -80,6 +82,7 @@ function RoutineList({ routines }: { routines: SnapshotRoutineNode[] }) {
 }
 
 export default function UserDashboardPage() {
+  const [section, setSection] = useState<DashboardSection>('ejercicio')
   const [tab, setTab] = useState<RoutineTab>('hoy')
   const [selectedDay, setSelectedDay] = useState(() => todayMondayIndex())
   const [pdfError, setPdfError] = useState<string | null>(null)
@@ -304,17 +307,19 @@ export default function UserDashboardPage() {
             <div className="flex flex-wrap gap-2">
               {(
                 [
-                  ['hoy', 'Hoy'],
-                  ['dia', 'Día'],
-                  ['global', 'Global'],
+                  ['ejercicio', 'Ejercicio'],
+                  ['nutricion', 'Nutrición'],
                 ] as const
               ).map(([id, label]) => (
                 <button
                   key={id}
                   type="button"
-                  onClick={() => setTab(id)}
-                  className={`rounded-lg px-3 py-2 text-[14px] font-medium ${
-                    tab === id
+                  aria-label={
+                    id === 'nutricion' ? 'Ver nutrición' : 'Ver ejercicio'
+                  }
+                  onClick={() => setSection(id)}
+                  className={`rounded-lg px-3 py-2 text-[14px] font-semibold ${
+                    section === id
                       ? 'bg-[var(--accent-purple)] text-white'
                       : 'border border-[var(--border-standard)] text-[var(--text-primary)]'
                   }`}
@@ -324,55 +329,55 @@ export default function UserDashboardPage() {
               ))}
             </div>
 
-            {tab === 'dia' ? (
-              <div className="flex flex-wrap gap-2">
-                {WEEKDAY_LABELS.map((label, index) => (
-                  <button
-                    key={label}
-                    type="button"
-                    onClick={() => setSelectedDay(index)}
-                    className={`rounded-lg px-3 py-1.5 text-[13px] ${
-                      selectedDay === index
-                        ? 'bg-[var(--bg-card)] font-semibold text-[var(--text-primary)] ring-1 ring-[var(--accent-purple)]'
-                        : 'text-[var(--text-secondary)]'
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            ) : null}
+            {section === 'ejercicio' ? (
+              <>
+                <div className="flex flex-wrap gap-2">
+                  {(
+                    [
+                      ['hoy', 'Hoy'],
+                      ['dia', 'Día'],
+                      ['global', 'Global'],
+                    ] as const
+                  ).map(([id, label]) => (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => setTab(id)}
+                      className={`rounded-lg px-3 py-2 text-[14px] font-medium ${
+                        tab === id
+                          ? 'bg-[var(--accent-purple)] text-white'
+                          : 'border border-[var(--border-standard)] text-[var(--text-primary)]'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
 
-            <RoutineList routines={visibleRoutines} />
-          </section>
+                {tab === 'dia' ? (
+                  <div className="flex flex-wrap gap-2">
+                    {WEEKDAY_LABELS.map((label, index) => (
+                      <button
+                        key={label}
+                        type="button"
+                        onClick={() => setSelectedDay(index)}
+                        className={`rounded-lg px-3 py-1.5 text-[13px] ${
+                          selectedDay === index
+                            ? 'bg-[var(--bg-card)] font-semibold text-[var(--text-primary)] ring-1 ring-[var(--accent-purple)]'
+                            : 'text-[var(--text-secondary)]'
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
 
-          <section className="rounded-2xl border border-[var(--border-standard)] bg-[var(--bg-card)] p-5">
-            <h2 className="text-[18px] font-semibold text-[var(--text-primary)]">
-              Nutrición
-            </h2>
-            {nutrition ? (
-              <p className="mt-2 text-[14px] text-[var(--text-primary)]">
-                {nutrition.dailyCaloriesKcal != null
-                  ? `${nutrition.dailyCaloriesKcal} kcal/día`
-                  : 'Plan nutricional'}
-                {[
-                  nutrition.proteinG != null && `P: ${nutrition.proteinG}g`,
-                  nutrition.carbsG != null && `C: ${nutrition.carbsG}g`,
-                  nutrition.fatG != null && `F: ${nutrition.fatG}g`,
-                ]
-                  .filter(Boolean)
-                  .join(' · ')}
-              </p>
+                <RoutineList routines={visibleRoutines} />
+              </>
             ) : (
-              <p className="mt-2 text-[14px] text-[var(--text-secondary)]">
-                Todavía no hay guía de nutrición en tu plan.
-              </p>
+              <StudentNutritionPanel nutrition={nutrition} />
             )}
-            {nutrition?.notes ? (
-              <p className="mt-2 text-[13px] text-[var(--text-secondary)]">
-                {nutrition.notes}
-              </p>
-            ) : null}
           </section>
 
           <section className="flex flex-col gap-3">

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter } from 'react-router'
@@ -71,7 +71,23 @@ const snapshot = {
   createdAt: '2026-08-10T00:00:00.000Z',
   payload: {
     takenAt: '2026-08-10T00:00:00.000Z',
-    nutrition: { dailyCaloriesKcal: 2000, proteinG: 150 },
+    nutrition: {
+      dailyCaloriesKcal: 2000,
+      proteinG: 150,
+      carbsG: 200,
+      fatG: 65,
+      notes: 'Comidas reales',
+      meals: [
+        {
+          name: 'Desayuno',
+          caloriesKcal: 500,
+          proteinG: 30,
+          carbsG: 50,
+          fatG: 15,
+        },
+        { name: 'Almuerzo', caloriesKcal: 700, notes: 'Con ensalada' },
+      ],
+    },
     routines: [
       {
         id: 'rt-mon',
@@ -211,8 +227,68 @@ describe('UserDashboardPage', () => {
     await user.click(screen.getByRole('button', { name: /Ejercicios/ }))
     expect(downloadPlanPdf).toHaveBeenCalledWith('plan-1', 'exercises')
 
-    await user.click(screen.getByRole('button', { name: /Nutrición/ }))
+    const downloadSection = screen
+      .getByRole('heading', { name: 'Descargar PDF' })
+      .closest('section')
+    await user.click(
+      within(downloadSection!).getByRole('button', { name: 'Nutrición' }),
+    )
     expect(downloadPlanPdf).toHaveBeenCalledWith('plan-1', 'nutrition')
+  })
+
+  it('shows nutrition tab with meals and day macros', async () => {
+    vi.mocked(fetchMySubscription).mockResolvedValue(subscription)
+    vi.mocked(fetchMyPlans).mockResolvedValue([plan])
+    vi.mocked(fetchPlanSnapshot).mockResolvedValue(snapshot)
+    const user = userEvent.setup()
+
+    renderPage()
+    await screen.findByText('Lunes fuerza')
+
+    await user.click(screen.getByRole('button', { name: 'Ver nutrición' }))
+
+    expect(await screen.findByText(/2000 kcal\/día/)).toBeInTheDocument()
+    expect(screen.getByText(/P 150g/)).toBeInTheDocument()
+    expect(screen.getByText('Comidas reales')).toBeInTheDocument()
+    expect(screen.getByText('Desayuno')).toBeInTheDocument()
+    expect(screen.getByText(/500 kcal/)).toBeInTheDocument()
+    expect(screen.getByText('Almuerzo')).toBeInTheDocument()
+    expect(screen.getByText(/Con ensalada/)).toBeInTheDocument()
+  })
+
+  it('switches nutrition view to week totals', async () => {
+    vi.mocked(fetchMySubscription).mockResolvedValue(subscription)
+    vi.mocked(fetchMyPlans).mockResolvedValue([plan])
+    vi.mocked(fetchPlanSnapshot).mockResolvedValue(snapshot)
+    const user = userEvent.setup()
+
+    renderPage()
+    await screen.findByText('Lunes fuerza')
+
+    await user.click(screen.getByRole('button', { name: 'Ver nutrición' }))
+    await user.click(screen.getByRole('button', { name: 'Semana' }))
+
+    expect(await screen.findByText(/14000 kcal\/semana/)).toBeInTheDocument()
+    expect(screen.getByText(/3500 kcal/)).toBeInTheDocument()
+  })
+
+  it('shows empty nutrition copy when snapshot has no nutrition', async () => {
+    vi.mocked(fetchMySubscription).mockResolvedValue(subscription)
+    vi.mocked(fetchMyPlans).mockResolvedValue([plan])
+    vi.mocked(fetchPlanSnapshot).mockResolvedValue({
+      ...snapshot,
+      payload: { ...snapshot.payload, nutrition: null },
+    })
+    const user = userEvent.setup()
+
+    renderPage()
+    await screen.findByText('Lunes fuerza')
+
+    await user.click(screen.getByRole('button', { name: 'Ver nutrición' }))
+
+    expect(
+      await screen.findByText('Todavía no hay guía de nutrición en tu plan.'),
+    ).toBeInTheDocument()
   })
 
   it('shows retry CTA when subscription is pending and retry is allowed', async () => {
