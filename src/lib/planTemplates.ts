@@ -132,12 +132,36 @@ export async function fetchRoutineBlocks(
 export async function addBlockToRoutine(
   templateId: string,
   routineId: string,
-  input: { name: string; order: number; rounds: number },
+  input: {
+    name: string
+    order: number
+    rounds: number
+    restBetweenRoundsSec?: number | null
+  },
 ): Promise<BlockTemplateDto> {
   return apiFetch<BlockTemplateDto>(
     `/plans/templates/${encodeURIComponent(templateId)}/routines/${encodeURIComponent(routineId)}/blocks`,
     {
       method: 'POST',
+      body: JSON.stringify(input),
+    },
+  )
+}
+
+export async function updateBlockTemplate(
+  templateId: string,
+  routineId: string,
+  blockId: string,
+  input: {
+    name?: string
+    rounds?: number
+    restBetweenRoundsSec?: number | null
+  },
+): Promise<BlockTemplateDto> {
+  return apiFetch<BlockTemplateDto>(
+    `/plans/templates/${encodeURIComponent(templateId)}/routines/${encodeURIComponent(routineId)}/blocks/${encodeURIComponent(blockId)}`,
+    {
+      method: 'PATCH',
       body: JSON.stringify(input),
     },
   )
@@ -157,12 +181,40 @@ export async function addExerciseToBlock(
   templateId: string,
   routineId: string,
   blockId: string,
-  input: { exerciseId: string; order: number; reps: number },
+  input: {
+    exerciseId: string
+    order: number
+    reps: number
+    weight?: number | null
+    restAfterSec?: number | null
+    notes?: string | null
+  },
 ): Promise<BlockExerciseTemplateDto> {
   return apiFetch<BlockExerciseTemplateDto>(
     `/plans/templates/${encodeURIComponent(templateId)}/routines/${encodeURIComponent(routineId)}/blocks/${encodeURIComponent(blockId)}/exercises`,
     {
       method: 'POST',
+      body: JSON.stringify(input),
+    },
+  )
+}
+
+export async function updateBlockExercise(
+  templateId: string,
+  routineId: string,
+  blockId: string,
+  exerciseTemplateId: string,
+  input: {
+    reps?: number
+    weight?: number | null
+    restAfterSec?: number | null
+    notes?: string | null
+  },
+): Promise<BlockExerciseTemplateDto> {
+  return apiFetch<BlockExerciseTemplateDto>(
+    `/plans/templates/${encodeURIComponent(templateId)}/routines/${encodeURIComponent(routineId)}/blocks/${encodeURIComponent(blockId)}/exercises/${encodeURIComponent(exerciseTemplateId)}`,
+    {
+      method: 'PATCH',
       body: JSON.stringify(input),
     },
   )

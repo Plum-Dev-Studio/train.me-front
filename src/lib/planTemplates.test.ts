@@ -5,6 +5,8 @@ import {
   addRoutineToTemplate,
   addBlockToRoutine,
   addExerciseToBlock,
+  updateBlockTemplate,
+  updateBlockExercise,
   nextOrder,
   suggestedRoutineName,
 } from './planTemplates'
@@ -157,6 +159,140 @@ describe('template nested POSTs', () => {
     )
     expect(mockFetch.mock.calls[2][0]).toBe(
       '/api/plans/templates/pt-1/routines/r-1/blocks/b-1/exercises',
+    )
+  })
+
+  it('POSTs block with restBetweenRoundsSec and exercise with weight/rest/notes', async () => {
+    mockFetch
+      .mockResolvedValueOnce(
+        okJson({
+          id: 'b-2',
+          routineTemplateId: 'r-1',
+          name: 'Pecho',
+          order: 1,
+          rounds: 3,
+          restBetweenRoundsSec: 60,
+          notes: null,
+          createdAt: '2026-01-01T00:00:00.000Z',
+          updatedAt: '2026-01-01T00:00:00.000Z',
+        }),
+      )
+      .mockResolvedValueOnce(
+        okJson({
+          id: 'e-2',
+          blockTemplateId: 'b-2',
+          exerciseId: 'ex-1',
+          order: 0,
+          reps: 10,
+          weight: 40,
+          restAfterSec: 90,
+          notes: 'por lado',
+          createdAt: '2026-01-01T00:00:00.000Z',
+          updatedAt: '2026-01-01T00:00:00.000Z',
+        }),
+      )
+
+    await addBlockToRoutine('pt-1', 'r-1', {
+      name: 'Pecho',
+      order: 1,
+      rounds: 3,
+      restBetweenRoundsSec: 60,
+    })
+    await addExerciseToBlock('pt-1', 'r-1', 'b-2', {
+      exerciseId: 'ex-1',
+      order: 0,
+      reps: 10,
+      weight: 40,
+      restAfterSec: 90,
+      notes: 'por lado',
+    })
+
+    expect(JSON.parse(mockFetch.mock.calls[0][1].body as string)).toEqual({
+      name: 'Pecho',
+      order: 1,
+      rounds: 3,
+      restBetweenRoundsSec: 60,
+    })
+    expect(JSON.parse(mockFetch.mock.calls[1][1].body as string)).toEqual({
+      exerciseId: 'ex-1',
+      order: 0,
+      reps: 10,
+      weight: 40,
+      restAfterSec: 90,
+      notes: 'por lado',
+    })
+  })
+})
+
+describe('template PATCH helpers', () => {
+  it('PATCHes block name, rounds and rest', async () => {
+    mockFetch.mockResolvedValue(
+      okJson({
+        id: 'b-1',
+        routineTemplateId: 'r-1',
+        name: 'Pecho',
+        order: 0,
+        rounds: 3,
+        restBetweenRoundsSec: 60,
+        notes: null,
+        createdAt: '2026-01-01T00:00:00.000Z',
+        updatedAt: '2026-01-01T00:00:00.000Z',
+      }),
+    )
+
+    await updateBlockTemplate('pt-1', 'r-1', 'b-1', {
+      name: 'Pecho',
+      rounds: 3,
+      restBetweenRoundsSec: 60,
+    })
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      '/api/plans/templates/pt-1/routines/r-1/blocks/b-1',
+      expect.objectContaining({
+        method: 'PATCH',
+        body: JSON.stringify({
+          name: 'Pecho',
+          rounds: 3,
+          restBetweenRoundsSec: 60,
+        }),
+      }),
+    )
+  })
+
+  it('PATCHes exercise reps, weight, rest and notes', async () => {
+    mockFetch.mockResolvedValue(
+      okJson({
+        id: 'e-1',
+        blockTemplateId: 'b-1',
+        exerciseId: 'ex-1',
+        order: 0,
+        reps: 12,
+        weight: 50,
+        restAfterSec: 120,
+        notes: 'por lado',
+        createdAt: '2026-01-01T00:00:00.000Z',
+        updatedAt: '2026-01-01T00:00:00.000Z',
+      }),
+    )
+
+    await updateBlockExercise('pt-1', 'r-1', 'b-1', 'e-1', {
+      reps: 12,
+      weight: 50,
+      restAfterSec: 120,
+      notes: 'por lado',
+    })
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      '/api/plans/templates/pt-1/routines/r-1/blocks/b-1/exercises/e-1',
+      expect.objectContaining({
+        method: 'PATCH',
+        body: JSON.stringify({
+          reps: 12,
+          weight: 50,
+          restAfterSec: 120,
+          notes: 'por lado',
+        }),
+      }),
     )
   })
 })

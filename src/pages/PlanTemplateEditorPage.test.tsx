@@ -5,7 +5,11 @@ import { MemoryRouter, Route, Routes } from 'react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import PlanTemplateEditorPage from './PlanTemplateEditorPage'
 import { fetchExercises } from '@/lib/exercisesApi'
-import { addExerciseToBlock, fetchPlanTemplateTree } from '@/lib/planTemplates'
+import {
+  addBlockToRoutine,
+  addExerciseToBlock,
+  fetchPlanTemplateTree,
+} from '@/lib/planTemplates'
 import { createPlanFromTemplate, publishPlan } from '@/lib/plans'
 import { fetchTrainerClientsWithUsers } from '@/lib/trainerClients'
 
@@ -196,6 +200,11 @@ describe('PlanTemplateEditorPage', () => {
       screen.getByLabelText(/Ejercicio para Bloque 1/i),
       'ex-1',
     )
+    await userEvent.type(screen.getByLabelText(/Peso para Bloque 1/i), '40')
+    await userEvent.type(
+      screen.getByLabelText(/Descanso después de Bloque 1/i),
+      '90',
+    )
     await userEvent.click(
       screen.getByRole('button', { name: 'Agregar ejercicio' }),
     )
@@ -204,6 +213,50 @@ describe('PlanTemplateEditorPage', () => {
       exerciseId: 'ex-1',
       order: 0,
       reps: 10,
+      weight: 40,
+      restAfterSec: 90,
+    })
+  })
+
+  it('creates a block with name, rounds and rest', async () => {
+    vi.mocked(addBlockToRoutine).mockResolvedValue({
+      id: 'b-2',
+      routineTemplateId: 'r-1',
+      name: 'Pecho',
+      order: 1,
+      rounds: 3,
+      restBetweenRoundsSec: 60,
+      notes: null,
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    })
+
+    renderEditor()
+
+    await screen.findByText('Fuerza')
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Agregar bloque' }),
+    )
+    await userEvent.type(
+      screen.getByLabelText(/Nombre del bloque en Lunes/i),
+      'Pecho',
+    )
+    await userEvent.clear(screen.getByLabelText(/Rounds del bloque en Lunes/i))
+    await userEvent.type(
+      screen.getByLabelText(/Rounds del bloque en Lunes/i),
+      '3',
+    )
+    await userEvent.type(
+      screen.getByLabelText(/Descanso entre rounds en Lunes/i),
+      '60',
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Crear bloque' }))
+
+    expect(addBlockToRoutine).toHaveBeenCalledWith('pt-1', 'r-1', {
+      name: 'Pecho',
+      order: 1,
+      rounds: 3,
+      restBetweenRoundsSec: 60,
     })
   })
 
