@@ -9,6 +9,20 @@ const trainerProfile = {
   experienceYears: 5,
   monthlyPrice: 25000,
   specialties: ['Fuerza'],
+  contactWhatsapp: null,
+  contactEmail: null,
+  contactInstagram: null,
+  averageRating: null,
+  reviewCount: 0,
+}
+
+const emptyReviews = {
+  averageRating: null,
+  reviewCount: 0,
+  data: [],
+  total: 0,
+  page: 1,
+  limit: 10,
 }
 
 const currentUser = {
@@ -51,6 +65,14 @@ async function mockApi(
       path === `/api/trainers/profiles/public/${TRAINER_ID}`
     ) {
       await fulfillJson(route, trainerProfile)
+      return
+    }
+
+    if (
+      method === 'GET' &&
+      path.startsWith(`/api/trainers/profiles/public/${TRAINER_ID}/reviews`)
+    ) {
+      await fulfillJson(route, emptyReviews)
       return
     }
 

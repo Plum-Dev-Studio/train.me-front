@@ -10,6 +10,8 @@ export interface PublicTrainerProfile {
   contactWhatsapp: string | null
   contactEmail: string | null
   contactInstagram: string | null
+  averageRating: number | null
+  reviewCount: number
 }
 
 export interface PublicTrainerListResponse {
