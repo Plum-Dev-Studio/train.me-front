@@ -23,8 +23,8 @@ export function IntakeQuestionnaireForm({
     mutationFn: () =>
       submitMyIntakeQuestionnaire(
         questionnaire.questions.map((q) => ({
-          questionId: q.id ?? '',
-          value: values[q.id ?? ''] ?? '',
+          questionId: q.id!,
+          value: values[q.id ?? q.label] ?? '',
         })),
       ),
     onSuccess: async () => {
