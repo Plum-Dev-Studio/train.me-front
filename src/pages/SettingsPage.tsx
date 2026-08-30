@@ -13,6 +13,7 @@ import {
   getMercadoPagoConnectionStatus,
   getMercadoPagoConnectUrl,
 } from '@/lib/payments'
+import { QuestionnaireSettingsSection } from '@/components/QuestionnaireSettingsSection'
 
 export default function SettingsPage() {
   const queryClient = useQueryClient()
@@ -292,6 +293,8 @@ export default function SettingsPage() {
                 </button>
               </div>
             </section>
+
+            <QuestionnaireSettingsSection />
 
             <section className="rounded-2xl border border-[var(--border-standard)] bg-[var(--bg-card)] p-6">
               <h2 className="font-display text-[20px] font-bold text-[var(--text-primary)]">
