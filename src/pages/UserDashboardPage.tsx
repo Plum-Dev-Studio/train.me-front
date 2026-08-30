@@ -14,8 +14,10 @@ import {
   type SnapshotRoutineNode,
 } from '@/lib/plans'
 import { fetchMySubscription } from '@/lib/subscriptions'
+import { fetchMyIntakeQuestionnaire } from '@/lib/questionnaires'
 import { SubscriptionPendingAlert } from '@/components/subscriptions/SubscriptionPendingAlert'
 import { TrainerContactLinks } from '@/components/TrainerContactLinks'
+import { IntakeQuestionnaireForm } from '@/components/IntakeQuestionnaireForm'
 import {
   WEEKDAY_LABELS,
   routinesForWeekday,
@@ -89,6 +91,14 @@ export default function UserDashboardPage() {
     queryKey: ['subscriptions', 'me'],
     queryFn: fetchMySubscription,
     retry: false,
+  })
+
+  const intakeQuery = useQuery({
+    queryKey: ['intake-questionnaire', 'me'],
+    queryFn: fetchMyIntakeQuestionnaire,
+    enabled:
+      subscriptionQuery.isSuccess &&
+      subscriptionQuery.data?.status === 'active',
   })
 
   const trainerQuery = useQuery({
@@ -172,6 +182,27 @@ export default function UserDashboardPage() {
   }
 
   const sub = subscriptionQuery.data
+  const showIntakeForm =
+    intakeQuery.isSuccess &&
+    intakeQuery.data.required &&
+    intakeQuery.data.questionnaire !== null
+
+  if (showIntakeForm && intakeQuery.data.questionnaire) {
+    return (
+      <div className="mx-auto flex w-full max-w-[1100px] flex-col gap-8 px-6 py-10">
+        <header className="flex flex-col gap-2">
+          <h1 className="font-display text-[34px] font-bold text-[var(--text-primary)]">
+            Tu panel
+          </h1>
+        </header>
+        <IntakeQuestionnaireForm
+          questionnaire={intakeQuery.data.questionnaire}
+          onSubmitted={() => void intakeQuery.refetch()}
+        />
+      </div>
+    )
+  }
+
   const routines = snapshotQuery.data?.payload.routines ?? []
   const nutrition = snapshotQuery.data?.payload.nutrition ?? null
   const snapshotMissing =

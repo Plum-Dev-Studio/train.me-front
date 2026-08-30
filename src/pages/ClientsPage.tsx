@@ -5,6 +5,7 @@ import { useTrainerDashboard } from '@/contexts/useTrainerDashboard'
 import { formatShortDate } from '@/lib/format'
 import { fetchTrainerClientsWithUsers } from '@/lib/trainerClients'
 import { mapTrainerClientStatus } from '@/lib/trainerDashboard'
+import { ClientIntakePanel } from '@/components/ClientIntakePanel'
 
 function shortId(id: string | null): string {
   if (!id) return '—'
@@ -17,6 +18,7 @@ export default function ClientsPage() {
   const dashboard = useTrainerDashboard()
   const trainerProfileId = dashboard.data?.trainer.profileId
   const [page, setPage] = useState(1)
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null)
   const limit = 20
 
   const query = useQuery({
@@ -110,9 +112,17 @@ export default function ClientsPage() {
                         key={row.id}
                         className={`grid ${GRID_COLS} gap-2 px-4 py-3 text-[13px] text-[var(--text-primary)]`}
                       >
-                        <span className="truncate font-medium">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setSelectedClientId((current) =>
+                              current === row.id ? null : row.id,
+                            )
+                          }
+                          className="truncate text-left font-medium hover:underline"
+                        >
                           {user?.email ?? row.userId}
-                        </span>
+                        </button>
                         <span className="text-[var(--text-secondary)]">
                           {statusLabel}
                         </span>
@@ -137,6 +147,17 @@ export default function ClientsPage() {
                 </ul>
               </div>
             )}
+
+            {selectedClientId ? (
+              <section className="rounded-2xl border border-[var(--border-standard)] bg-[var(--bg-card)] p-6">
+                <h2 className="text-[18px] font-semibold text-[var(--text-primary)]">
+                  Cuestionario del alumno
+                </h2>
+                <div className="mt-3">
+                  <ClientIntakePanel clientId={selectedClientId} />
+                </div>
+              </section>
+            ) : null}
           </>
         ) : null}
       </div>
