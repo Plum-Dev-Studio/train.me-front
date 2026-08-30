@@ -47,6 +47,8 @@ export async function createPlanFromTemplate(input: {
   trainerId: string
   userId: string
   templateId: string
+  startDate?: string | null
+  endDate?: string | null
 }): Promise<PlanDto> {
   return apiFetch<PlanDto>('/plans', {
     method: 'POST',

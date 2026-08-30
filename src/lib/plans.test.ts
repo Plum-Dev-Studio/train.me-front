@@ -169,6 +169,41 @@ describe('createPlanFromTemplate', () => {
     })
     expect(result.id).toBe('plan-1')
   })
+
+  it('POSTs optional startDate and endDate', async () => {
+    vi.spyOn(apiModule, 'apiFetch').mockResolvedValue({
+      id: 'plan-1',
+      trainerId: 'tr-1',
+      userId: 'u-1',
+      templateId: 'pt-1',
+      status: 'draft',
+      startDate: '2026-09-01T00:00:00.000Z',
+      endDate: '2026-12-01T00:00:00.000Z',
+      notes: null,
+      nutrition: null,
+      createdAt: '2026-08-01T00:00:00.000Z',
+      updatedAt: '2026-08-01T00:00:00.000Z',
+    })
+
+    await createPlanFromTemplate({
+      trainerId: 'tr-1',
+      userId: 'u-1',
+      templateId: 'pt-1',
+      startDate: '2026-09-01T00:00:00.000Z',
+      endDate: '2026-12-01T00:00:00.000Z',
+    })
+
+    expect(apiModule.apiFetch).toHaveBeenCalledWith('/plans', {
+      method: 'POST',
+      body: JSON.stringify({
+        trainerId: 'tr-1',
+        userId: 'u-1',
+        templateId: 'pt-1',
+        startDate: '2026-09-01T00:00:00.000Z',
+        endDate: '2026-12-01T00:00:00.000Z',
+      }),
+    })
+  })
 })
 
 describe('publishPlan', () => {

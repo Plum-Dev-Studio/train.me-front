@@ -1,4 +1,5 @@
 import { apiFetch } from './api'
+import type { PlanDto } from './plans'
 import type { TrainerClientStatus } from './trainerDashboard'
 import { fetchUser, type UserResponse } from './users'
 
@@ -8,6 +9,7 @@ export interface TrainerClientRow {
   userId: string
   status: TrainerClientStatus
   activeSubscriptionId: string | null
+  trainerNotes: string | null
   createdAt: string
   updatedAt: string
 }
@@ -51,4 +53,25 @@ export async function fetchTrainerClientsWithUsers(
     uniqueUserIds.map((id, i) => [id, users[i]!]),
   )
   return { list, usersById }
+}
+
+export async function updateTrainerClientNotes(
+  clientId: string,
+  trainerNotes: string | null,
+): Promise<TrainerClientRow> {
+  return apiFetch<TrainerClientRow>(
+    `/trainers/me/clients/${encodeURIComponent(clientId)}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify({ trainerNotes }),
+    },
+  )
+}
+
+export async function fetchTrainerClientPlans(
+  clientId: string,
+): Promise<PlanDto[]> {
+  return apiFetch<PlanDto[]>(
+    `/trainers/me/clients/${encodeURIComponent(clientId)}/plans`,
+  )
 }
