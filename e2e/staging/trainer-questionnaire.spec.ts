@@ -71,9 +71,13 @@ test.describe('@staging US-1.5 trainer questionnaire', () => {
     await page.getByLabel(/Objetivo/).fill(uniqueGoal)
     await page.getByLabel(/Edad/).fill('30')
     await page.getByRole('button', { name: 'Enviar respuestas' }).click()
-    await expect(page.getByText(/respuestas fueron enviadas/i)).toBeVisible({
+    // Success toast unmounts when intake refetch hides the gate (M3).
+    await expect(
+      page.getByRole('heading', { name: 'Suscripción' }),
+    ).toBeVisible({
       timeout: 15_000,
     })
+    await expect(page.getByText('Completá tu cuestionario')).not.toBeVisible()
 
     await loginAs(page, TRAINER_EMAIL, PASSWORD, /\/app/)
     await page.goto('/app/clientes')
