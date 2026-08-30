@@ -72,6 +72,11 @@ async function mockPendingDashboardApi(page: Page): Promise<void> {
         experienceYears: 5,
         monthlyPrice: 25000,
         specialties: [],
+        contactWhatsapp: null,
+        contactEmail: null,
+        contactInstagram: null,
+        averageRating: null,
+        reviewCount: 0,
       })
       return
     }

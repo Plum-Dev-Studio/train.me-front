@@ -131,6 +131,8 @@ describe('UserDashboardPage', () => {
       contactWhatsapp: null,
       contactEmail: null,
       contactInstagram: null,
+      averageRating: null,
+      reviewCount: 0,
     })
   })
 
@@ -295,6 +297,8 @@ describe('UserDashboardPage', () => {
       contactWhatsapp: '5491123456789',
       contactEmail: null,
       contactInstagram: null,
+      averageRating: null,
+      reviewCount: 0,
     })
 
     renderPage()
