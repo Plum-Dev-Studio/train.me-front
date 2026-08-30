@@ -76,8 +76,8 @@ test.describe('@staging US-2.2 trainer reviews', () => {
     ).toBeVisible()
 
     // --- M3: average rating visible in header after publish ---
-    await expect(page.getByText(/^\d\.\d/)).toBeVisible()
-    await expect(page.getByText(/reseña/i)).toBeVisible()
+    await expect(page.getByText('4.0').first()).toBeVisible()
+    await expect(page.getByText(/reseñas?/i).first()).toBeVisible()
 
     // --- M4: trainer cannot review (403 surfaced in UI) ---
     await loginAs(page, TRAINER_EMAIL, PASSWORD, /\/app/)
