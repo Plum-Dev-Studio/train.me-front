@@ -132,6 +132,7 @@ describe('PlanTemplateEditorPage', () => {
             userId: 'user-1',
             status: 'active',
             activeSubscriptionId: 'sub-1',
+            trainerNotes: null,
             createdAt: '2026-01-01T00:00:00.000Z',
             updatedAt: '2026-01-01T00:00:00.000Z',
           },
@@ -278,5 +279,31 @@ describe('PlanTemplateEditorPage', () => {
     expect(
       await screen.findByText(/Plan asignado y publicado/i),
     ).toBeInTheDocument()
+  })
+
+  it('passes optional start and end dates when assigning', async () => {
+    renderEditor()
+
+    await screen.findByText('Fuerza')
+    await userEvent.selectOptions(screen.getByLabelText('Cliente'), 'user-1')
+    await userEvent.type(
+      screen.getByLabelText('Fecha de inicio del plan'),
+      '2026-09-01',
+    )
+    await userEvent.type(
+      screen.getByLabelText('Fecha de fin del plan'),
+      '2026-12-01',
+    )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Asignar y publicar' }),
+    )
+
+    expect(createPlanFromTemplate).toHaveBeenCalledWith({
+      trainerId: 'tr-1',
+      userId: 'user-1',
+      templateId: 'pt-1',
+      startDate: '2026-09-01T00:00:00.000Z',
+      endDate: '2026-12-01T00:00:00.000Z',
+    })
   })
 })

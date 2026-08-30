@@ -6,6 +6,8 @@ import { formatShortDate } from '@/lib/format'
 import { fetchTrainerClientsWithUsers } from '@/lib/trainerClients'
 import { mapTrainerClientStatus } from '@/lib/trainerDashboard'
 import { ClientIntakePanel } from '@/components/ClientIntakePanel'
+import { ClientTrainerNotesPanel } from '@/components/ClientTrainerNotesPanel'
+import { ClientPlansPanel } from '@/components/ClientPlansPanel'
 
 function shortId(id: string | null): string {
   if (!id) return '—'
@@ -149,14 +151,44 @@ export default function ClientsPage() {
             )}
 
             {selectedClientId ? (
-              <section className="rounded-2xl border border-[var(--border-standard)] bg-[var(--bg-card)] p-6">
-                <h2 className="text-[18px] font-semibold text-[var(--text-primary)]">
-                  Cuestionario del alumno
-                </h2>
-                <div className="mt-3">
-                  <ClientIntakePanel clientId={selectedClientId} />
-                </div>
-              </section>
+              <>
+                <section className="rounded-2xl border border-[var(--border-standard)] bg-[var(--bg-card)] p-6">
+                  <h2 className="text-[18px] font-semibold text-[var(--text-primary)]">
+                    Notas del entrenador
+                  </h2>
+                  <div className="mt-3">
+                    <ClientTrainerNotesPanel
+                      clientId={selectedClientId}
+                      initialNotes={
+                        query.data.list.data.find((r) => r.id === selectedClientId)
+                          ?.trainerNotes ?? null
+                      }
+                      trainerProfileId={trainerProfileId}
+                    />
+                  </div>
+                </section>
+
+                <section className="rounded-2xl border border-[var(--border-standard)] bg-[var(--bg-card)] p-6">
+                  <h2 className="text-[18px] font-semibold text-[var(--text-primary)]">
+                    Planes del cliente
+                  </h2>
+                  <p className="mt-1 text-[13px] text-[var(--text-secondary)]">
+                    Borradores y publicados vinculados a este alumno.
+                  </p>
+                  <div className="mt-3">
+                    <ClientPlansPanel clientId={selectedClientId} />
+                  </div>
+                </section>
+
+                <section className="rounded-2xl border border-[var(--border-standard)] bg-[var(--bg-card)] p-6">
+                  <h2 className="text-[18px] font-semibold text-[var(--text-primary)]">
+                    Cuestionario del alumno
+                  </h2>
+                  <div className="mt-3">
+                    <ClientIntakePanel clientId={selectedClientId} />
+                  </div>
+                </section>
+              </>
             ) : null}
           </>
         ) : null}

@@ -25,6 +25,13 @@ function parseOptionalNumber(value: string): number | undefined {
   return Number.isFinite(num) && num >= 0 ? num : undefined
 }
 
+/** HTML date input (YYYY-MM-DD) → ISO midnight UTC for API. */
+function dateInputToIso(value: string): string | undefined {
+  const trimmed = value.trim()
+  if (!trimmed) return undefined
+  return `${trimmed}T00:00:00.000Z`
+}
+
 function formatExerciseDetails(ex: {
   reps: number
   weight: number | null
@@ -73,6 +80,8 @@ export default function PlanTemplateEditorPage() {
   const [restAfterSec, setRestAfterSec] = useState('')
   const [repsPerSide, setRepsPerSide] = useState(false)
   const [clientUserId, setClientUserId] = useState('')
+  const [planStartDate, setPlanStartDate] = useState('')
+  const [planEndDate, setPlanEndDate] = useState('')
   const [assignMessage, setAssignMessage] = useState<string | null>(null)
   const [assignError, setAssignError] = useState<string | null>(null)
 
@@ -177,10 +186,14 @@ export default function PlanTemplateEditorPage() {
   const assign = useMutation({
     mutationFn: async () => {
       if (!trainerProfileId) throw new Error('missing trainer')
+      const startDate = dateInputToIso(planStartDate)
+      const endDate = dateInputToIso(planEndDate)
       const plan = await createPlanFromTemplate({
         trainerId: trainerProfileId,
         userId: clientUserId,
         templateId,
+        ...(startDate ? { startDate } : {}),
+        ...(endDate ? { endDate } : {}),
       })
       try {
         await publishPlan(plan.id)
@@ -685,6 +698,30 @@ export default function PlanTemplateEditorPage() {
                       )
                     })}
                   </select>
+                </label>
+                <label className="flex w-40 flex-col gap-1.5">
+                  <span className="text-[13px] font-medium text-[var(--text-primary)]">
+                    Inicio (opcional)
+                  </span>
+                  <input
+                    aria-label="Fecha de inicio del plan"
+                    type="date"
+                    value={planStartDate}
+                    onChange={(e) => setPlanStartDate(e.target.value)}
+                    className="h-11 rounded-[10px] border border-[var(--border-standard)] bg-transparent px-3.5 text-[14px] text-[var(--text-primary)] focus:border-[var(--accent-purple)] focus:outline-none"
+                  />
+                </label>
+                <label className="flex w-40 flex-col gap-1.5">
+                  <span className="text-[13px] font-medium text-[var(--text-primary)]">
+                    Fin (opcional)
+                  </span>
+                  <input
+                    aria-label="Fecha de fin del plan"
+                    type="date"
+                    value={planEndDate}
+                    onChange={(e) => setPlanEndDate(e.target.value)}
+                    className="h-11 rounded-[10px] border border-[var(--border-standard)] bg-transparent px-3.5 text-[14px] text-[var(--text-primary)] focus:border-[var(--accent-purple)] focus:outline-none"
+                  />
                 </label>
                 <button
                   type="submit"
