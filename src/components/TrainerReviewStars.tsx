@@ -7,7 +7,7 @@ export function TrainerReviewStars({
   averageRating,
   reviewCount,
 }: TrainerReviewStarsProps) {
-  if (reviewCount === 0 || averageRating === null) {
+  if ((reviewCount ?? 0) === 0 || averageRating == null) {
     return (
       <p className="text-[14px] text-[var(--text-secondary)]">
         Sin reseñas todavía
