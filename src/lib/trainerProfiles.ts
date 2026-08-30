@@ -9,6 +9,9 @@ export interface TrainerProfileResponse {
   monthlyPrice: number | null
   certifications: string[] | null
   isPublic: boolean
+  contactWhatsapp: string | null
+  contactEmail: string | null
+  contactInstagram: string | null
   createdAt: string
   updatedAt: string
 }
@@ -20,6 +23,9 @@ export interface UpdateTrainerProfileInput {
   monthlyPrice?: number | null
   certifications?: string[] | null
   isPublic?: boolean
+  contactWhatsapp?: string | null
+  contactEmail?: string | null
+  contactInstagram?: string | null
 }
 
 export async function fetchTrainerProfileByUserId(

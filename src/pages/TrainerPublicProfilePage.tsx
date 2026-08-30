@@ -5,6 +5,7 @@ import { ApiError } from '@/lib/api'
 import { getPublicTrainerProfile } from '@/lib/publicTrainers'
 import { createSubscriptionCheckout } from '@/lib/subscriptions'
 import { subscriptionCheckoutErrorMessage } from '@/lib/subscriptionPending'
+import { TrainerContactLinks } from '@/components/TrainerContactLinks'
 
 function formatPrice(price: number | null): string {
   if (price === null) return 'Precio a coordinar'
@@ -115,6 +116,13 @@ export default function TrainerPublicProfilePage() {
             </span>
           )}
         </div>
+
+        <TrainerContactLinks
+          whatsapp={trainer.contactWhatsapp}
+          email={trainer.contactEmail}
+          instagram={trainer.contactInstagram}
+          variant="inline"
+        />
 
         <div className="mt-8">
           <button

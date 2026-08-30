@@ -7,6 +7,9 @@ export interface PublicTrainerProfile {
   experienceYears: number | null
   monthlyPrice: number | null
   specialties: string[]
+  contactWhatsapp: string | null
+  contactEmail: string | null
+  contactInstagram: string | null
 }
 
 export interface PublicTrainerListResponse {
