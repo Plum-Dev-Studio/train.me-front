@@ -4,7 +4,10 @@ export type NutritionPeriod = 'day' | 'week'
 
 const DAYS_PER_WEEK = 7
 
-function scale(value: number | undefined, period: NutritionPeriod): number | undefined {
+function scale(
+  value: number | undefined,
+  period: NutritionPeriod,
+): number | undefined {
   if (value == null) return undefined
   return period === 'week' ? value * DAYS_PER_WEEK : value
 }
