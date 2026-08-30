@@ -20,6 +20,21 @@ const CONTACT = {
   instagramNormalized: 'coachstaging',
 }
 
+async function loginAs(
+  page: import('@playwright/test').Page,
+  email: string,
+  password: string,
+  expectedPath: RegExp,
+) {
+  await page.goto('/login')
+  await page.evaluate(() => localStorage.removeItem('auth_token'))
+  await page.reload()
+  await page.getByRole('textbox', { name: 'Email' }).fill(email)
+  await page.getByLabel('Contraseña').fill(password)
+  await page.getByRole('button', { name: /iniciar sesión/i }).click()
+  await expect(page).toHaveURL(expectedPath, { timeout: 20_000 })
+}
+
 test.describe('@staging US-1.6 trainer contact channels', () => {
   test.use({ baseURL: STAGING_FRONT })
 
@@ -28,11 +43,7 @@ test.describe('@staging US-1.6 trainer contact channels', () => {
     request,
   }) => {
     // --- M1: trainer saves contact fields in settings ---
-    await page.goto('/login')
-    await page.getByLabel(/email/i).fill(TRAINER_EMAIL)
-    await page.getByLabel(/contraseña/i).fill(TRAINER_PASSWORD)
-    await page.getByRole('button', { name: /iniciar sesión/i }).click()
-    await expect(page).toHaveURL(/\/app/, { timeout: 20_000 })
+    await loginAs(page, TRAINER_EMAIL, TRAINER_PASSWORD, /\/app/)
 
     await page.goto('/app/configuracion')
     await expect(
@@ -100,11 +111,7 @@ test.describe('@staging US-1.6 trainer contact channels', () => {
     )
 
     // --- M3: student /me shows contact section with WA prefilled ---
-    await page.goto('/login')
-    await page.getByLabel(/email/i).fill(USER_EMAIL)
-    await page.getByLabel(/contraseña/i).fill(USER_PASSWORD)
-    await page.getByRole('button', { name: /iniciar sesión/i }).click()
-    await expect(page).toHaveURL(/\/me/, { timeout: 20_000 })
+    await loginAs(page, USER_EMAIL, USER_PASSWORD, /\/me/)
 
     await expect(page.getByText('Contactar entrenador')).toBeVisible()
     const studentWa = page.getByRole('link', { name: 'WhatsApp' })
@@ -114,12 +121,8 @@ test.describe('@staging US-1.6 trainer contact channels', () => {
       expect.stringContaining('text=Hola'),
     )
 
-    // --- M4 + M5: clear contacts; IG @ stripped on save (verified in M1 reload) ---
-    await page.goto('/login')
-    await page.getByLabel(/email/i).fill(TRAINER_EMAIL)
-    await page.getByLabel(/contraseña/i).fill(TRAINER_PASSWORD)
-    await page.getByRole('button', { name: /iniciar sesión/i }).click()
-    await expect(page).toHaveURL(/\/app/, { timeout: 20_000 })
+    // --- M4: clear contacts; public profile hides links (M5 IG @ verified in M1) ---
+    await loginAs(page, TRAINER_EMAIL, TRAINER_PASSWORD, /\/app/)
 
     await page.goto('/app/configuracion')
     await page.getByPlaceholder('54911…').fill('')
