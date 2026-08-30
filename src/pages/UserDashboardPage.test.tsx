@@ -40,6 +40,10 @@ vi.mock('@/lib/routineWeekday', async () => {
   }
 })
 
+vi.mock('@/components/BecomeTrainerButton', () => ({
+  BecomeTrainerButton: () => <button type="button">Soy entrenador</button>,
+}))
+
 const subscription = {
   id: 'sub-1',
   userId: 'user-1',
@@ -147,6 +151,7 @@ describe('UserDashboardPage', () => {
       await screen.findByText('Todavía no tenés una suscripción.'),
     ).toBeInTheDocument()
     expect(screen.getByText('Ver entrenadores')).toBeInTheDocument()
+    expect(screen.getByText('Soy entrenador')).toBeInTheDocument()
   })
 
   it('shows subscription endDate and today’s routine by default', async () => {

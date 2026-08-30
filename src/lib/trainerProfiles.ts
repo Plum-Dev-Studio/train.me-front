@@ -43,3 +43,9 @@ export async function updateTrainerProfileByUserId(
     body: JSON.stringify(input),
   })
 }
+
+export async function registerAsTrainer(): Promise<TrainerProfileResponse> {
+  return apiFetch<TrainerProfileResponse>('/trainers/profiles/me/register', {
+    method: 'POST',
+  })
+}

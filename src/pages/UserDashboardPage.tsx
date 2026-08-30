@@ -16,6 +16,7 @@ import {
 import { fetchMySubscription } from '@/lib/subscriptions'
 import { fetchMyIntakeQuestionnaire } from '@/lib/questionnaires'
 import { SubscriptionPendingAlert } from '@/components/subscriptions/SubscriptionPendingAlert'
+import { BecomeTrainerButton } from '@/components/BecomeTrainerButton'
 import { TrainerContactLinks } from '@/components/TrainerContactLinks'
 import { IntakeQuestionnaireForm } from '@/components/IntakeQuestionnaireForm'
 import {
@@ -163,12 +164,15 @@ export default function UserDashboardPage() {
         <p className="text-[15px] text-[var(--text-secondary)]">
           Todavía no tenés una suscripción.
         </p>
-        <Link
-          to="/entrenadores"
-          className="w-fit rounded-xl bg-[var(--accent-purple)] px-4 py-2 text-[14px] font-semibold text-white"
-        >
-          Ver entrenadores
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link
+            to="/entrenadores"
+            className="w-fit rounded-xl bg-[var(--accent-purple)] px-4 py-2 text-[14px] font-semibold text-white"
+          >
+            Ver entrenadores
+          </Link>
+          <BecomeTrainerButton />
+        </div>
       </div>
     )
   }

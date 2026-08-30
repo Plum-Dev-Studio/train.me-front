@@ -6,6 +6,10 @@ import { MemoryRouter, Route, Routes } from 'react-router'
 import { PublicTopNav } from './PublicTopNav'
 import { fetchCurrentUser } from '@/lib/users'
 
+vi.mock('@/components/BecomeTrainerButton', () => ({
+  BecomeTrainerButton: () => <button type="button">Soy entrenador</button>,
+}))
+
 vi.mock('@/lib/users', () => ({
   fetchCurrentUser: vi.fn(),
 }))
@@ -78,6 +82,7 @@ describe('PublicTopNav', () => {
     )
 
     expect(screen.getByText('Mi plan')).toBeInTheDocument()
+    expect(screen.getByText('Soy entrenador')).toBeInTheDocument()
   })
 
   it('logs out and goes back to guest CTAs', async () => {
