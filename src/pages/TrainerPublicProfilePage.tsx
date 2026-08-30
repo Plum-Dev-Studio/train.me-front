@@ -5,7 +5,10 @@ import { ApiError } from '@/lib/api'
 import { getPublicTrainerProfile } from '@/lib/publicTrainers'
 import { createSubscriptionCheckout } from '@/lib/subscriptions'
 import { subscriptionCheckoutErrorMessage } from '@/lib/subscriptionPending'
+import { fetchCurrentUser } from '@/lib/users'
 import { TrainerContactLinks } from '@/components/TrainerContactLinks'
+import { TrainerReviewStars } from '@/components/TrainerReviewStars'
+import { TrainerReviewsSection } from '@/components/TrainerReviewsSection'
 
 function formatPrice(price: number | null): string {
   if (price === null) return 'Precio a coordinar'
@@ -18,12 +21,22 @@ export default function TrainerPublicProfilePage() {
   const location = useLocation()
   const [error, setError] = useState<string | null>(null)
   const [subscribing, setSubscribing] = useState(false)
+  const hasAuthToken = Boolean(localStorage.getItem('auth_token'))
 
   const query = useQuery({
     queryKey: ['public-trainer', trainerId],
     queryFn: () => getPublicTrainerProfile(trainerId),
     enabled: Boolean(trainerId),
   })
+
+  const currentUserQuery = useQuery({
+    queryKey: ['auth-me'],
+    queryFn: fetchCurrentUser,
+    enabled: hasAuthToken,
+    retry: false,
+  })
+
+  const canReview = currentUserQuery.data?.role === 'user'
 
   async function handleSubscribe() {
     const token = localStorage.getItem('auth_token')
@@ -90,6 +103,12 @@ export default function TrainerPublicProfilePage() {
                 ? `${trainer.experienceYears} años de experiencia`
                 : 'Experiencia no informada'}
             </p>
+            <div className="mt-2">
+              <TrainerReviewStars
+                averageRating={trainer.averageRating}
+                reviewCount={trainer.reviewCount}
+              />
+            </div>
           </div>
           <div className="rounded-xl bg-[var(--accent-purple)] px-4 py-2 text-[14px] font-semibold text-white">
             {formatPrice(trainer.monthlyPrice)}
