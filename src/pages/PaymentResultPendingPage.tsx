@@ -1,6 +1,6 @@
-import { Link } from 'react-router'
-import { useLocation } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
+import { getPendingSubscriptionCopy } from '@/lib/subscriptionPending'
 import { getSubscriptionById } from '@/lib/subscriptions'
 
 export default function PaymentResultPendingPage() {
@@ -19,6 +19,14 @@ export default function PaymentResultPendingPage() {
     refetchInterval: 5000,
   })
 
+  const sub = subscriptionQuery.data
+  const pendingCopy = sub
+    ? getPendingSubscriptionCopy(
+        sub.pendingReason,
+        sub.canRetryPayment ?? false,
+      )
+    : null
+
   return (
     <div className="flex min-h-full items-center justify-center bg-[var(--bg-page)] px-6 py-12">
       <div className="w-full max-w-[560px] rounded-2xl border border-[var(--border-standard)] bg-[var(--bg-card)] p-8 text-center">
@@ -26,8 +34,8 @@ export default function PaymentResultPendingPage() {
           Pago pendiente
         </h1>
         <p className="mt-3 text-[15px] text-[var(--text-secondary)]">
-          El pago quedó en estado pendiente. Cuando Mercado Pago lo confirme, la
-          suscripción se activará automáticamente.
+          {pendingCopy?.message ??
+            'El pago quedó en estado pendiente. Cuando Mercado Pago lo confirme, la suscripción se activará automáticamente.'}
         </p>
         {paymentId || status || externalReference ? (
           <div className="mt-6 rounded-xl border border-[var(--border-standard)] bg-[var(--bg-page)] px-4 py-3 text-left text-[13px] text-[var(--text-secondary)]">
@@ -36,16 +44,21 @@ export default function PaymentResultPendingPage() {
             {externalReference ? <p>Referencia: {externalReference}</p> : null}
           </div>
         ) : null}
-        {subscriptionQuery.data ? (
+        {sub ? (
           <p className="mt-3 text-[13px] text-[var(--text-secondary)]">
-            Estado actual de la suscripción:{' '}
-            <strong>{subscriptionQuery.data.status}</strong>
+            Estado actual de la suscripción: <strong>{sub.status}</strong>
           </p>
         ) : null}
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8 flex flex-col items-center gap-3">
+          <Link
+            to="/me"
+            className="rounded-xl bg-[var(--accent-purple)] px-5 py-2.5 text-[14px] font-semibold text-white hover:opacity-90"
+          >
+            Ir a mi panel
+          </Link>
           <Link
             to="/entrenadores"
-            className="rounded-xl bg-[var(--accent-purple)] px-5 py-2.5 text-[14px] font-semibold text-white hover:opacity-90"
+            className="text-[14px] text-[var(--text-secondary)] underline"
           >
             Volver a entrenadores
           </Link>

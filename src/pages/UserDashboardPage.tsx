@@ -14,6 +14,7 @@ import {
   type SnapshotRoutineNode,
 } from '@/lib/plans'
 import { fetchMySubscription } from '@/lib/subscriptions'
+import { SubscriptionPendingAlert } from '@/components/subscriptions/SubscriptionPendingAlert'
 import {
   WEEKDAY_LABELS,
   routinesForWeekday,
@@ -235,6 +236,12 @@ export default function UserDashboardPage() {
             </dd>
           </div>
         </dl>
+        {sub.status === 'pending' ? (
+          <SubscriptionPendingAlert
+            pendingReason={sub.pendingReason}
+            canRetryPayment={sub.canRetryPayment ?? false}
+          />
+        ) : null}
       </section>
 
       {planLoading ? (
