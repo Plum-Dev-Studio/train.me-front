@@ -1,11 +1,13 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import SettingsPage from './SettingsPage'
 import { fetchCurrentUser } from '@/lib/users'
 import {
   fetchTrainerProfileByUserId,
+  updateTrainerProfileByUserId,
   type TrainerProfileResponse,
 } from '@/lib/trainerProfiles'
 import { getMercadoPagoConnectionStatus } from '@/lib/payments'
@@ -44,6 +46,9 @@ const trainerProfile: TrainerProfileResponse = {
   monthlyPrice: 25000,
   certifications: null,
   isPublic: true,
+  contactWhatsapp: null,
+  contactEmail: null,
+  contactInstagram: null,
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
 }
@@ -115,6 +120,39 @@ describe('SettingsPage Mercado Pago OAuth callback', () => {
 
     await waitFor(() => {
       expect(router.state.location.search).toBe('')
+    })
+  })
+})
+
+describe('SettingsPage contact channels', () => {
+  it('saves contact fields via PATCH', async () => {
+    const user = userEvent.setup()
+    vi.mocked(updateTrainerProfileByUserId).mockResolvedValue({
+      ...trainerProfile,
+      contactWhatsapp: '5491123456789',
+      contactEmail: 'coach@test.com',
+      contactInstagram: 'coach',
+    })
+
+    renderSettingsPage('/app/configuracion')
+
+    await screen.findByDisplayValue('Coach Test')
+
+    await user.type(screen.getByPlaceholderText('54911…'), '5491123456789')
+    await user.type(screen.getByPlaceholderText('coach@…'), 'coach@test.com')
+    await user.type(screen.getByPlaceholderText('miusuario'), 'coach')
+    await user.click(screen.getByRole('button', { name: 'Guardar contacto' }))
+
+    await waitFor(() => {
+      expect(updateTrainerProfileByUserId).toHaveBeenCalledWith('trainer-1', {
+        displayName: 'Coach Test',
+        bio: null,
+        monthlyPrice: 25000,
+        isPublic: true,
+        contactWhatsapp: '5491123456789',
+        contactEmail: 'coach@test.com',
+        contactInstagram: 'coach',
+      })
     })
   })
 })

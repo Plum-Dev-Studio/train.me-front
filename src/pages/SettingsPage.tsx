@@ -22,6 +22,9 @@ export default function SettingsPage() {
   const [bio, setBio] = useState<string | null>(null)
   const [monthlyPrice, setMonthlyPrice] = useState<string | null>(null)
   const [isPublic, setIsPublic] = useState<boolean | null>(null)
+  const [contactWhatsapp, setContactWhatsapp] = useState<string | null>(null)
+  const [contactEmail, setContactEmail] = useState<string | null>(null)
+  const [contactInstagram, setContactInstagram] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
 
   const currentUserQuery = useQuery({
@@ -75,6 +78,12 @@ export default function SettingsPage() {
       ? String(profileQuery.data.monthlyPrice)
       : '')
   const resolvedIsPublic = isPublic ?? profileQuery.data?.isPublic ?? true
+  const resolvedContactWhatsapp =
+    contactWhatsapp ?? profileQuery.data?.contactWhatsapp ?? ''
+  const resolvedContactEmail =
+    contactEmail ?? profileQuery.data?.contactEmail ?? ''
+  const resolvedContactInstagram =
+    contactInstagram ?? profileQuery.data?.contactInstagram ?? ''
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -93,6 +102,18 @@ export default function SettingsPage() {
         bio: resolvedBio.trim() === '' ? null : resolvedBio.trim(),
         monthlyPrice: priceValue,
         isPublic: resolvedIsPublic,
+        contactWhatsapp:
+          resolvedContactWhatsapp.trim() === ''
+            ? null
+            : resolvedContactWhatsapp.trim(),
+        contactEmail:
+          resolvedContactEmail.trim() === ''
+            ? null
+            : resolvedContactEmail.trim(),
+        contactInstagram:
+          resolvedContactInstagram.trim() === ''
+            ? null
+            : resolvedContactInstagram.trim(),
       })
     },
     onSuccess: async () => {
@@ -101,6 +122,9 @@ export default function SettingsPage() {
       setBio(null)
       setMonthlyPrice(null)
       setIsPublic(null)
+      setContactWhatsapp(null)
+      setContactEmail(null)
+      setContactInstagram(null)
       await queryClient.invalidateQueries({
         queryKey: ['trainerProfile', currentUserQuery.data?.id],
       })
@@ -207,6 +231,64 @@ export default function SettingsPage() {
                   className="rounded-xl bg-[var(--accent-purple)] px-5 py-2.5 text-[14px] font-semibold text-white hover:opacity-90 disabled:opacity-50"
                 >
                   {saveMutation.isPending ? 'Guardando…' : 'Guardar cambios'}
+                </button>
+              </div>
+            </section>
+
+            <section className="rounded-2xl border border-[var(--border-standard)] bg-[var(--bg-card)] p-6">
+              <h2 className="font-display text-[20px] font-bold text-[var(--text-primary)]">
+                Canales de contacto
+              </h2>
+              <p className="mt-2 text-[14px] text-[var(--text-secondary)]">
+                Opcional. Tus alumnos y visitantes del perfil público podrán
+                contactarte.
+              </p>
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <label className="flex flex-col gap-1 text-[13px] text-[var(--text-secondary)]">
+                  WhatsApp
+                  <input
+                    value={resolvedContactWhatsapp}
+                    onChange={(e) => setContactWhatsapp(e.target.value)}
+                    inputMode="tel"
+                    placeholder="54911…"
+                    className="rounded-lg border border-[var(--border-standard)] bg-transparent px-3 py-2 text-[14px] text-[var(--text-primary)]"
+                  />
+                  <span className="text-[12px]">
+                    Solo números con código de país (ej. 549…)
+                  </span>
+                </label>
+                <label className="flex flex-col gap-1 text-[13px] text-[var(--text-secondary)]">
+                  Email público
+                  <input
+                    value={resolvedContactEmail}
+                    onChange={(e) => setContactEmail(e.target.value)}
+                    type="email"
+                    placeholder="coach@…"
+                    className="rounded-lg border border-[var(--border-standard)] bg-transparent px-3 py-2 text-[14px] text-[var(--text-primary)]"
+                  />
+                  <span className="text-[12px]">
+                    No reemplaza el email de login
+                  </span>
+                </label>
+                <label className="md:col-span-2 flex flex-col gap-1 text-[13px] text-[var(--text-secondary)]">
+                  Instagram
+                  <input
+                    value={resolvedContactInstagram}
+                    onChange={(e) => setContactInstagram(e.target.value)}
+                    placeholder="miusuario"
+                    className="rounded-lg border border-[var(--border-standard)] bg-transparent px-3 py-2 text-[14px] text-[var(--text-primary)]"
+                  />
+                  <span className="text-[12px]">Sin @</span>
+                </label>
+              </div>
+              <div className="mt-4 flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => saveMutation.mutate()}
+                  disabled={saveMutation.isPending}
+                  className="rounded-xl bg-[var(--accent-purple)] px-5 py-2.5 text-[14px] font-semibold text-white hover:opacity-90 disabled:opacity-50"
+                >
+                  {saveMutation.isPending ? 'Guardando…' : 'Guardar contacto'}
                 </button>
               </div>
             </section>
