@@ -128,6 +128,9 @@ describe('UserDashboardPage', () => {
       experienceYears: 5,
       monthlyPrice: 25000,
       specialties: [],
+      contactWhatsapp: null,
+      contactEmail: null,
+      contactInstagram: null,
     })
   })
 
@@ -277,5 +280,30 @@ describe('UserDashboardPage', () => {
     await user.click(screen.getByRole('button', { name: 'Reintentar pago' }))
 
     expect(retrySubscriptionCheckout).toHaveBeenCalled()
+  })
+
+  it('shows trainer WhatsApp link in contact section', async () => {
+    vi.mocked(fetchMySubscription).mockResolvedValue(subscription)
+    vi.mocked(fetchMyPlans).mockResolvedValue([])
+    vi.mocked(getPublicTrainerProfile).mockResolvedValue({
+      id: 'profile-1',
+      displayName: 'Ana Coach',
+      bio: null,
+      experienceYears: 5,
+      monthlyPrice: 25000,
+      specialties: [],
+      contactWhatsapp: '5491123456789',
+      contactEmail: null,
+      contactInstagram: null,
+    })
+
+    renderPage()
+
+    expect(await screen.findByText('Contactar entrenador')).toBeInTheDocument()
+    const link = screen.getByRole('link', { name: 'WhatsApp' })
+    expect(link).toHaveAttribute(
+      'href',
+      expect.stringContaining('wa.me/5491123456789'),
+    )
   })
 })

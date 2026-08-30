@@ -15,6 +15,7 @@ import {
 } from '@/lib/plans'
 import { fetchMySubscription } from '@/lib/subscriptions'
 import { SubscriptionPendingAlert } from '@/components/subscriptions/SubscriptionPendingAlert'
+import { TrainerContactLinks } from '@/components/TrainerContactLinks'
 import {
   WEEKDAY_LABELS,
   routinesForWeekday,
@@ -241,6 +242,20 @@ export default function UserDashboardPage() {
             pendingReason={sub.pendingReason}
             canRetryPayment={sub.canRetryPayment ?? false}
           />
+        ) : null}
+        {trainerQuery.data ? (
+          <div className="mt-4 border-t border-[var(--border-standard)] pt-4">
+            <h3 className="text-[15px] font-semibold text-[var(--text-primary)]">
+              Contactar entrenador
+            </h3>
+            <div className="mt-2">
+              <TrainerContactLinks
+                whatsapp={trainerQuery.data.contactWhatsapp}
+                email={trainerQuery.data.contactEmail}
+                instagram={trainerQuery.data.contactInstagram}
+              />
+            </div>
+          </div>
         ) : null}
       </section>
 
