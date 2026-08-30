@@ -1,4 +1,5 @@
 import { apiFetch } from './api'
+import type { SubscriptionPendingReason } from './subscriptionPending'
 
 export interface CreateSubscriptionCheckoutInput {
   trainerId: string
@@ -21,6 +22,15 @@ export interface SubscriptionResponse {
   startDate: string | null
   endDate: string | null
   canceledAt: string | null
+  lastPaymentStatus?:
+    | 'created'
+    | 'approved'
+    | 'rejected'
+    | 'refunded'
+    | 'chargeback'
+    | null
+  pendingReason?: SubscriptionPendingReason | null
+  canRetryPayment?: boolean
 }
 
 export interface SubscriptionListResponse {
@@ -63,4 +73,11 @@ export async function listTrainerSubscriptions(
 
 export async function fetchMySubscription(): Promise<SubscriptionResponse> {
   return apiFetch<SubscriptionResponse>('/subscriptions/me')
+}
+
+export async function retrySubscriptionCheckout(): Promise<CreateSubscriptionCheckoutResponse> {
+  return apiFetch<CreateSubscriptionCheckoutResponse>(
+    '/subscriptions/me/retry-checkout',
+    { method: 'POST' },
+  )
 }

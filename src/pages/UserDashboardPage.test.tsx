@@ -4,13 +4,17 @@ import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter } from 'react-router'
 import UserDashboardPage from './UserDashboardPage'
-import { fetchMySubscription } from '@/lib/subscriptions'
+import {
+  fetchMySubscription,
+  retrySubscriptionCheckout,
+} from '@/lib/subscriptions'
 import { getPublicTrainerProfile } from '@/lib/publicTrainers'
 import { downloadPlanPdf, fetchMyPlans, fetchPlanSnapshot } from '@/lib/plans'
 import { ApiError } from '@/lib/api'
 
 vi.mock('@/lib/subscriptions', () => ({
   fetchMySubscription: vi.fn(),
+  retrySubscriptionCheckout: vi.fn(),
 }))
 vi.mock('@/lib/publicTrainers', () => ({
   getPublicTrainerProfile: vi.fn(),
@@ -204,5 +208,74 @@ describe('UserDashboardPage', () => {
 
     await user.click(screen.getByRole('button', { name: /Nutrición/ }))
     expect(downloadPlanPdf).toHaveBeenCalledWith('plan-1', 'nutrition')
+  })
+
+  it('shows retry CTA when subscription is pending and retry is allowed', async () => {
+    vi.mocked(fetchMySubscription).mockResolvedValue({
+      ...subscription,
+      status: 'pending',
+      startDate: null,
+      endDate: null,
+      pendingReason: 'payment_rejected',
+      canRetryPayment: true,
+      lastPaymentStatus: 'rejected',
+    })
+    vi.mocked(fetchMyPlans).mockResolvedValue([])
+
+    renderPage()
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'El último pago fue rechazado',
+    )
+    expect(
+      screen.getByRole('button', { name: 'Reintentar pago' }),
+    ).toBeInTheDocument()
+  })
+
+  it('shows wait copy without retry when payment is in progress', async () => {
+    vi.mocked(fetchMySubscription).mockResolvedValue({
+      ...subscription,
+      status: 'pending',
+      startDate: null,
+      endDate: null,
+      pendingReason: 'payment_in_progress',
+      canRetryPayment: false,
+      lastPaymentStatus: 'created',
+    })
+    vi.mocked(fetchMyPlans).mockResolvedValue([])
+
+    renderPage()
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Estamos esperando confirmación de Mercado Pago',
+    )
+    expect(
+      screen.queryByRole('button', { name: 'Reintentar pago' }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('calls retry checkout when user clicks Reintentar pago', async () => {
+    vi.mocked(fetchMySubscription).mockResolvedValue({
+      ...subscription,
+      status: 'pending',
+      startDate: null,
+      endDate: null,
+      pendingReason: 'payment_rejected',
+      canRetryPayment: true,
+    })
+    vi.mocked(fetchMyPlans).mockResolvedValue([])
+    vi.mocked(retrySubscriptionCheckout).mockResolvedValue({
+      subscriptionId: 'sub-1',
+      paymentId: 'pay-2',
+      preferenceId: 'pref-2',
+      checkoutUrl: 'https://www.mercadopago.com.ar/checkout/retry',
+    })
+    const user = userEvent.setup()
+
+    renderPage()
+    await screen.findByRole('button', { name: 'Reintentar pago' })
+    await user.click(screen.getByRole('button', { name: 'Reintentar pago' }))
+
+    expect(retrySubscriptionCheckout).toHaveBeenCalled()
   })
 })

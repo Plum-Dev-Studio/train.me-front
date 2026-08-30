@@ -4,32 +4,11 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { ApiError } from '@/lib/api'
 import { getPublicTrainerProfile } from '@/lib/publicTrainers'
 import { createSubscriptionCheckout } from '@/lib/subscriptions'
+import { subscriptionCheckoutErrorMessage } from '@/lib/subscriptionPending'
 
 function formatPrice(price: number | null): string {
   if (price === null) return 'Precio a coordinar'
   return `$${price.toLocaleString('es-AR')}/mes`
-}
-
-function checkoutErrorMessage(error: ApiError): string {
-  const body = error.body as { message?: string } | null
-  const apiMessage = body?.message ?? ''
-  if (apiMessage.includes('monthly price is not configured')) {
-    return 'Este entrenador todavía no configuró su precio mensual.'
-  }
-  if (apiMessage.includes('MercadoPago account is not connected')) {
-    return 'Este entrenador todavía no tiene habilitados los cobros en Mercado Pago.'
-  }
-  if (error.status === 409) {
-    const code = (error.body as { error?: string } | null)?.error
-    if (code === 'MP_SANDBOX_TOKEN_REQUIRED') {
-      return 'Este entrenador tiene Mercado Pago de producción. Hay que reconectar la cuenta en sandbox.'
-    }
-    return 'Hay que reconectar Mercado Pago de este entrenador.'
-  }
-  if (error.status === 401 || error.status === 403) {
-    return 'Necesitás iniciar sesión como cliente para suscribirte.'
-  }
-  return `No pudimos iniciar la suscripción (${error.status}). Intentá nuevamente.`
 }
 
 export default function TrainerPublicProfilePage() {
@@ -66,7 +45,7 @@ export default function TrainerPublicProfilePage() {
       window.location.href = result.checkoutUrl
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(checkoutErrorMessage(err))
+        setError(subscriptionCheckoutErrorMessage(err))
       } else {
         setError('No pudimos iniciar la suscripción. Intentá nuevamente.')
       }
