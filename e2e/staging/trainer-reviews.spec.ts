@@ -71,10 +71,12 @@ test.describe('@staging US-2.2 trainer reviews', () => {
     await expect(page.getByText('Reseña guardada.')).toBeVisible({
       timeout: 15_000,
     })
-    await expect(page.getByText(uniqueComment)).toBeVisible()
+    await expect(
+      page.getByRole('article').filter({ hasText: uniqueComment }),
+    ).toBeVisible()
 
     // --- M3: average rating visible in header after publish ---
-    await expect(page.getByText(/\d\.\d/)).toBeVisible()
+    await expect(page.getByText(/^\d\.\d/)).toBeVisible()
     await expect(page.getByText(/reseña/i)).toBeVisible()
 
     // --- M4: trainer cannot review (403 surfaced in UI) ---
