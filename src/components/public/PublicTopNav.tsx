@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router'
 import { fetchCurrentUser } from '@/lib/users'
+import { BecomeTrainerButton } from '@/components/BecomeTrainerButton'
 
 function initialsFromName(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean)
@@ -103,13 +104,16 @@ export function PublicTopNav() {
                       Ir a mi panel
                     </Link>
                   ) : (
-                    <Link
-                      to="/me"
-                      onClick={() => setMenuOpen(false)}
-                      className="rounded-lg px-3 py-2 text-[14px] text-[var(--text-primary)] hover:bg-[var(--bg-page)]"
-                    >
-                      Mi plan
-                    </Link>
+                    <>
+                      <Link
+                        to="/me"
+                        onClick={() => setMenuOpen(false)}
+                        className="rounded-lg px-3 py-2 text-[14px] text-[var(--text-primary)] hover:bg-[var(--bg-page)]"
+                      >
+                        Mi plan
+                      </Link>
+                      <BecomeTrainerButton variant="menu" className="w-full" />
+                    </>
                   )}
                   <Link
                     to="/"
