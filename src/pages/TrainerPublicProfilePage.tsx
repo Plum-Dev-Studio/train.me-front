@@ -149,6 +149,15 @@ export default function TrainerPublicProfilePage() {
           ) : null}
         </div>
       </section>
+
+      <TrainerReviewsSection
+        trainerId={trainer.id}
+        summary={{
+          averageRating: trainer.averageRating,
+          reviewCount: trainer.reviewCount,
+        }}
+        canReview={canReview}
+      />
     </div>
   )
 }
