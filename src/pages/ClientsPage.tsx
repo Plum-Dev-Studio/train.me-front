@@ -160,8 +160,9 @@ export default function ClientsPage() {
                     <ClientTrainerNotesPanel
                       clientId={selectedClientId}
                       initialNotes={
-                        query.data.list.data.find((r) => r.id === selectedClientId)
-                          ?.trainerNotes ?? null
+                        query.data.list.data.find(
+                          (r) => r.id === selectedClientId,
+                        )?.trainerNotes ?? null
                       }
                       trainerProfileId={trainerProfileId}
                     />

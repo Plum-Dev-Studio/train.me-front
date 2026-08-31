@@ -28,7 +28,9 @@ async function loginAs(
 }
 
 /** After reset:intake staging, client@seed.local may hit the intake gate first. */
-async function dismissIntakeGateIfPresent(page: import('@playwright/test').Page) {
+async function dismissIntakeGateIfPresent(
+  page: import('@playwright/test').Page,
+) {
   const gate = page.getByText('Completá tu cuestionario')
   if (!(await gate.isVisible({ timeout: 3_000 }).catch(() => false))) return
   await page.getByLabel(/Objetivo/).fill(`QA bypass ${Date.now()}`)
@@ -59,9 +61,7 @@ test.describe('@staging factory iter-001 manual QA', () => {
     await page
       .getByRole('textbox', { name: /Nombre del bloque/i })
       .fill(blockName)
-    await page
-      .getByRole('spinbutton', { name: /Rounds del bloque/i })
-      .fill('3')
+    await page.getByRole('spinbutton', { name: /Rounds del bloque/i }).fill('3')
     await page
       .getByRole('spinbutton', { name: /Descanso entre rounds/i })
       .fill('60')

@@ -74,7 +74,9 @@ export function ClientTrainerNotesPanel({
           {save.isPending ? 'Guardando…' : 'Guardar notas'}
         </button>
         {saveMessage ? (
-          <p className="text-[13px] text-[var(--text-primary)]">{saveMessage}</p>
+          <p className="text-[13px] text-[var(--text-primary)]">
+            {saveMessage}
+          </p>
         ) : null}
         {saveError ? (
           <p role="alert" className="text-[13px] text-[var(--status-expired)]">

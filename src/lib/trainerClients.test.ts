@@ -49,10 +49,13 @@ describe('updateTrainerClientNotes', () => {
 
     const result = await updateTrainerClientNotes('tc-1', 'Focus mobility')
 
-    expect(apiModule.apiFetch).toHaveBeenCalledWith('/trainers/me/clients/tc-1', {
-      method: 'PATCH',
-      body: JSON.stringify({ trainerNotes: 'Focus mobility' }),
-    })
+    expect(apiModule.apiFetch).toHaveBeenCalledWith(
+      '/trainers/me/clients/tc-1',
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ trainerNotes: 'Focus mobility' }),
+      },
+    )
     expect(result.trainerNotes).toBe('Focus mobility')
   })
 
@@ -61,10 +64,13 @@ describe('updateTrainerClientNotes', () => {
 
     await updateTrainerClientNotes('tc-1', null)
 
-    expect(apiModule.apiFetch).toHaveBeenCalledWith('/trainers/me/clients/tc-1', {
-      method: 'PATCH',
-      body: JSON.stringify({ trainerNotes: null }),
-    })
+    expect(apiModule.apiFetch).toHaveBeenCalledWith(
+      '/trainers/me/clients/tc-1',
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ trainerNotes: null }),
+      },
+    )
   })
 })
 
