@@ -45,7 +45,10 @@ describe('ClientTrainerNotesPanel', () => {
     await userEvent.type(textarea, 'Updated note')
     await userEvent.click(screen.getByRole('button', { name: 'Guardar notas' }))
 
-    expect(updateTrainerClientNotes).toHaveBeenCalledWith('tc-1', 'Updated note')
+    expect(updateTrainerClientNotes).toHaveBeenCalledWith(
+      'tc-1',
+      'Updated note',
+    )
     expect(await screen.findByText(/Notas guardadas/i)).toBeInTheDocument()
   })
 })
