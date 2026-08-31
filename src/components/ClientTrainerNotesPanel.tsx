@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateTrainerClientNotes } from '@/lib/trainerClients'
 
@@ -8,7 +8,7 @@ interface ClientTrainerNotesPanelProps {
   trainerProfileId: string | undefined
 }
 
-export function ClientTrainerNotesPanel({
+function ClientTrainerNotesPanelInner({
   clientId,
   initialNotes,
   trainerProfileId,
@@ -17,12 +17,6 @@ export function ClientTrainerNotesPanel({
   const [notes, setNotes] = useState(initialNotes ?? '')
   const [saveMessage, setSaveMessage] = useState<string | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
-
-  useEffect(() => {
-    setNotes(initialNotes ?? '')
-    setSaveMessage(null)
-    setSaveError(null)
-  }, [clientId, initialNotes])
 
   const save = useMutation({
     mutationFn: () =>
@@ -86,4 +80,9 @@ export function ClientTrainerNotesPanel({
       </div>
     </div>
   )
+}
+
+/** Remounts form state when switching clients (avoids sync effect). */
+export function ClientTrainerNotesPanel(props: ClientTrainerNotesPanelProps) {
+  return <ClientTrainerNotesPanelInner key={props.clientId} {...props} />
 }
