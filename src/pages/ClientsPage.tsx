@@ -93,7 +93,7 @@ export default function ClientsPage() {
                 Cuando agregues clientes, aparecerán acá.
               </p>
             ) : (
-              <div className="overflow-hidden rounded-2xl border border-[var(--border-standard)] bg-[var(--bg-card)]">
+              <div className="flex min-h-[240px] flex-1 flex-col overflow-hidden rounded-2xl border border-[var(--border-standard)] bg-[var(--bg-card)]">
                 <div
                   className={`grid ${GRID_COLS} gap-2 border-b border-[var(--border-standard)] px-4 py-3 text-[12px] font-semibold text-[var(--text-secondary)]`}
                 >
@@ -103,7 +103,7 @@ export default function ClientsPage() {
                   <span>Actualizado</span>
                   <span>ID cliente</span>
                 </div>
-                <ul className="divide-y divide-[#E4E4E720]">
+                <ul className="flex-1 overflow-auto divide-y divide-[#E4E4E720]">
                   {query.data.list.data.map((row) => {
                     const user = query.data!.usersById[row.userId]
                     const { label: statusLabel } = mapTrainerClientStatus(
