@@ -47,7 +47,7 @@ export default function NutritionCatalogPage() {
               No hay plantillas nutricionales precargadas.
             </p>
           ) : (
-            <ul className="flex flex-col gap-3">
+            <ul className="flex min-h-[240px] flex-1 flex-col gap-3 overflow-auto">
               {query.data.map((preset) => (
                 <NutritionPresetCard
                   key={preset.id}
