@@ -45,7 +45,7 @@ export default function SubscriptionsPage() {
             Todavía no tenés suscripciones.
           </p>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-[var(--border-standard)] bg-[var(--bg-card)]">
+          <div className="flex min-h-[240px] flex-1 flex-col overflow-hidden rounded-2xl border border-[var(--border-standard)] bg-[var(--bg-card)]">
             <div className="grid grid-cols-[minmax(0,1fr)_120px_120px_120px_120px] gap-2 border-b border-[var(--border-standard)] px-4 py-3 text-[12px] font-semibold text-[var(--text-secondary)]">
               <span>Cliente</span>
               <span>Plan</span>
@@ -53,7 +53,7 @@ export default function SubscriptionsPage() {
               <span>Inicio</span>
               <span>Fin</span>
             </div>
-            <ul className="divide-y divide-[#E4E4E720]">
+            <ul className="flex-1 overflow-auto divide-y divide-[#E4E4E720]">
               {query.data.list.data.map((subscription) => {
                 const user = query.data.usersById[subscription.userId]
                 return (
